@@ -158,6 +158,18 @@ h2 {
     margin-right: 5px;
 }
 
+.category-tag {
+    display: inline-block;
+    background: #764ba2;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 0.75em;
+    margin-bottom: 10px;
+    margin-right: 5px;
+    text-transform: uppercase;
+}
+
 /* 项目展示 */
 .project-list {
     background: white;

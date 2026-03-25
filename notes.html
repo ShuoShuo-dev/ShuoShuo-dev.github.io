@@ -79,6 +79,38 @@
             margin-bottom: 20px;
             opacity: 0.5;
         }
+        .category-filter {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .category-btn {
+            padding: 10px 25px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .category-btn:hover,
+        .category-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        .note-card .category-tag {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.75em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
@@ -106,6 +138,14 @@
             <p>记录我的技术学习历程和心得体会</p>
         </div>
         
+        <div class="category-filter">
+            <button class="category-btn active" data-category="all">全部</button>
+            <button class="category-btn" data-category="html">HTML</button>
+            <button class="category-btn" data-category="css">CSS</button>
+            <button class="category-btn" data-category="javascript">JavaScript</button>
+            <button class="category-btn" data-category="other">其他</button>
+        </div>
+        
         <div class="notes-grid" id="notes-grid">
             <!-- 笔记列表将由 JavaScript 动态生成 -->
         </div>
@@ -119,40 +159,14 @@
     </footer>
 
     <script>
+        let allNotes = [];
+        
         // 动态加载笔记列表
         async function loadNotes() {
             try {
                 const response = await fetch('notes/notes.json');
-                const notes = await response.json();
-                const grid = document.getElementById('notes-grid');
-                
-                if (notes.length === 0) {
-                    grid.innerHTML = `
-                        <div class="empty-notes" style="grid-column: 1 / -1;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            <p>还没有笔记</p>
-                            <p style="font-size: 14px; margin-top: 10px;">敬请期待...</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                grid.innerHTML = notes.map(note => {
-                    const tags = note.tags ? note.tags.split(',').map(t => t.trim()).filter(t => t) : [];
-                    const tagsHtml = tags.map(tag => `<span class="tag">${tag}</span>`).join('');
-                    const excerpt = note.intro || (note.content ? note.content.substring(0, 100) + '...' : '');
-                    
-                    return `
-                        <article class="note-card">
-                            <h3><a href="notes/${note.filename}">${note.title}</a></h3>
-                            <p class="date">📅 ${note.date}</p>
-                            <p class="excerpt">${excerpt}</p>
-                            ${tagsHtml}
-                        </article>
-                    `;
-                }).join('');
+                allNotes = await response.json();
+                renderNotes('all');
             } catch (error) {
                 document.getElementById('notes-grid').innerHTML = `
                     <div class="empty-notes" style="grid-column: 1 / -1;">
@@ -161,6 +175,51 @@
                 `;
             }
         }
+        
+        // 渲染笔记
+        function renderNotes(category) {
+            const grid = document.getElementById('notes-grid');
+            const notes = category === 'all' ? allNotes : allNotes.filter(n => n.category === category);
+            
+            if (notes.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-notes" style="grid-column: 1 / -1;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <p>该分类下还没有笔记</p>
+                        <p style="font-size: 14px; margin-top: 10px;">敬请期待...</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = notes.map(note => {
+                const tags = note.tags ? note.tags.split(',').map(t => t.trim()).filter(t => t) : [];
+                const tagsHtml = tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+                const excerpt = note.intro || (note.content ? note.content.substring(0, 100) + '...' : '');
+                const categoryLabel = note.category ? note.category.toUpperCase() : 'OTHER';
+                
+                return `
+                    <article class="note-card" data-category="${note.category || 'other'}">
+                        <span class="category-tag">${categoryLabel}</span>
+                        <h3><a href="notes/${note.filename}">${note.title}</a></h3>
+                        <p class="date">📅 ${note.date}</p>
+                        <p class="excerpt">${excerpt}</p>
+                        ${tagsHtml}
+                    </article>
+                `;
+            }).join('');
+        }
+        
+        // 分类筛选
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                renderNotes(this.dataset.category);
+            });
+        });
         
         loadNotes();
     </script>
