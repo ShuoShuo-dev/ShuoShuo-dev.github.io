@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java 基础学习笔记 - ShuoShuo 的学习笔记</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .note-content {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .note-content h1 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        .note-content h2 {
+            margin-top: 30px;
+            color: #333;
+        }
+        .note-content pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .note-content code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>📝 ShuoShuo 的学习笔记</h1>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 40px;">
+        <a href="../index.html" class="back-link">← 返回首页</a>
+        
+        <article class="note-content">
+            <h1>Java 基础学习笔记</h1>
+            <p class="date" style="color: #999; margin-bottom: 20px;">发布日期：2026-03-25</p>
+
+            <h2>1. Java 简介</h2>
+            <p>Java 是一种面向对象的编程语言，具有跨平台、安全性高、稳定性好等特点。</p>
+
+            <h2>2. 基础语法</h2>
+            <h3>2.1 Hello World</h3>
+            <pre><code>public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}</code></pre>
+
+            <h3>2.2 数据类型</h3>
+            <ul>
+                <li><strong>基本类型：</strong>int, long, double, float, boolean, char, byte, short</li>
+                <li><strong>引用类型：</strong>String, 数组, 类, 接口</li>
+            </ul>
+
+            <h2>3. 面向对象</h2>
+            <h3>3.1 三大特性</h3>
+            <ul>
+                <li><strong>封装：</strong>将数据和方法封装在类中</li>
+                <li><strong>继承：</strong>子类继承父类的属性和方法</li>
+                <li><strong>多态：</strong>同一接口，不同实现</li>
+            </ul>
+
+            <h2>4. 常用集合</h2>
+            <pre><code>// List
+List&lt;String&gt; list = new ArrayList&lt;&gt;();
+list.add("Java");
+list.add("Python");
+
+// Map
+Map&lt;String, Integer&gt; map = new HashMap&lt;&gt;();
+map.put("age", 20);
+
+// Set
+Set&lt;String&gt; set = new HashSet&lt;&gt;();
+set.add("A");
+set.add("B");</code></pre>
+
+            <h2>5. 学习心得</h2>
+            <p>Java 作为一门经典的编程语言，语法严谨，适合大型项目开发。学习过程中要多动手实践，理解面向对象的思想。</p>
+        </article>
+    </main>
+
+    <footer style="margin-top: 50px;">
+        <div class="container">
+            <p>&copy; 2026 ShuoShuo. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
