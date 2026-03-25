@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于我 - ShuoShuo 的学习笔记</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .about-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .about-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .about-header h2 {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .about-content {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .profile-section {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid #eee;
+        }
+        .avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 60px;
+        }
+        .profile-section h3 {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .profile-section p {
+            color: #666;
+        }
+        .info-section {
+            margin-bottom: 30px;
+        }
+        .info-section h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        .info-section p {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .skill-tag {
+            background: #f0f0f0;
+            color: #667eea;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        .contact-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        .contact-section h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            color: #666;
+        }
+        .contact-item span {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        .contact-item a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .contact-item a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>📝 ShuoShuo 的学习笔记</h1>
+            <p class="subtitle">记录学习历程，分享技术心得</p>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="index.html">首页</a></li>
+                <li><a href="notes.html">学习笔记</a></li>
+                <li><a href="projects.html">项目展示</a></li>
+                <li><a href="about.html" class="active">关于我</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="about-container">
+        <div class="about-header">
+            <h2>👋 关于我</h2>
+        </div>
+        
+        <div class="about-content">
+            <div class="profile-section">
+                <div class="avatar">👨‍💻</div>
+                <h3>ShuoShuo</h3>
+                <p>热爱技术的学生 | Java 后端开发者</p>
+            </div>
+            
+            <div class="info-section">
+                <h4>🎯 自我介绍</h4>
+                <p>我是一名热爱技术的学生，正在学习 Java 后端开发和前端技术。这个博客用于记录我的学习历程，分享技术心得。</p>
+                <p>我相信持续学习和实践是成长的最佳途径，希望通过这个博客与更多志同道合的朋友交流学习。</p>
+            </div>
+            
+            <div class="info-section">
+                <h4>💻 技术栈</h4>
+                <div class="skills">
+                    <span class="skill-tag">Java</span>
+                    <span class="skill-tag">Spring Boot</span>
+                    <span class="skill-tag">Vue.js</span>
+                    <span class="skill-tag">JavaScript</span>
+                    <span class="skill-tag">HTML/CSS</span>
+                    <span class="skill-tag">MySQL</span>
+                    <span class="skill-tag">Git</span>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <h4>📚 学习方向</h4>
+                <p>• 深入 Java 后端开发，掌握 Spring 生态体系</p>
+                <p>• 学习前端技术，提升全栈开发能力</p>
+                <p>• 探索云原生和微服务架构</p>
+                <p>• 持续学习新技术，保持技术敏感度</p>
+            </div>
+            
+            <div class="contact-section">
+                <h4>📮 联系方式</h4>
+                <div class="contact-item">
+                    <span>📧</span>
+                    <span>邮箱：2251058969@qq.com</span>
+                </div>
+                <div class="contact-item">
+                    <span>💻</span>
+                    <span>GitHub：<a href="https://github.com/ShuoShuo-dev" target="_blank">@ShuoShuo-dev</a></span>
+                </div>
+                <div class="contact-item">
+                    <span>🌐</span>
+                    <span>博客：<a href="https://shuoshuo-dev.github.io/" target="_blank">shuoshuo-dev.github.io</a></span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 ShuoShuo. All rights reserved.</p>
+            <p>Powered by GitHub Pages</p>
+        </div>
+    </footer>
+</body>
+</html>
