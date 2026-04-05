@@ -141,8 +141,10 @@ buildToc();
 
 
 def read_md_files():
-    """读取所有 Markdown 文件"""
-    md_dir = 'md-notes'
+    """读取所有 Markdown 文件（从桌面 Shuo Study 文件夹）"""
+    import os
+    desktop = os.environ.get('USERPROFILE', os.path.expanduser('~'))
+    md_dir = os.path.join(desktop, 'Desktop', 'Shuo Study')
     notes = []
     
     if not os.path.exists(md_dir):

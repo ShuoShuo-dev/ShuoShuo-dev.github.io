@@ -26,7 +26,10 @@ sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 PORT = 8088
 BLOG_DIR = os.path.dirname(os.path.abspath(__file__))
-MD_DIR = os.path.join(BLOG_DIR, 'md-notes')
+# 笔记存放目录：桌面上的 Shuo Study 文件夹
+DESKTOP = os.path.join(os.environ['USERPROFILE'], 'Desktop')
+STUDY_DIR = os.path.join(DESKTOP, 'Shuo Study')
+MD_DIR = STUDY_DIR
 NOTES_JSON = os.path.join(BLOG_DIR, 'notes', 'notes.json')
 os.makedirs(MD_DIR, exist_ok=True)
 
