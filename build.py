@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-博客构建工具 - 将 Markdown 笔记转换为 HTML
+博客构建工具 - 将 Markdown 笔记转换为 HTML（VitePress 风格）
 """
 
 import sys
@@ -11,11 +11,134 @@ sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 import os
 import re
+import json
 import markdown
 from datetime import datetime
 
 # Markdown 转换器
 md = markdown.Markdown(extensions=['fenced_code', 'tables', 'toc'])
+
+# 侧边栏 HTML（供 notes/ 子目录下的页面使用，路径以 ../ 开头）
+SIDEBAR_HTML = '''
+    <nav>
+      <div class="sidebar-group" id="grp-web">
+        <div class="sidebar-group-title" onclick="toggleGroup('grp-web')">HTML5 笔记 <span class="arrow">▼</span></div>
+        <div class="sidebar-items">
+          <a href="../notes.html?cat=html" class="sidebar-item">HTML5 语义标签</a>
+          <a href="../notes.html?cat=html" class="sidebar-item">HTML5 表单与媒体</a>
+        </div>
+      </div>
+      <div class="sidebar-group" id="grp-css">
+        <div class="sidebar-group-title" onclick="toggleGroup('grp-css')">CSS3 笔记 <span class="arrow">▼</span></div>
+        <div class="sidebar-items">
+          <a href="../notes.html?cat=css" class="sidebar-item">CSS3 核心技术</a>
+          <a href="../notes.html?cat=css" class="sidebar-item">现代网页布局</a>
+          <a href="../notes.html?cat=css" class="sidebar-item">交互动效设计</a>
+          <a href="../notes.html?cat=css" class="sidebar-item">前沿技术拓展</a>
+          <a href="../notes.html?cat=css" class="sidebar-item">移动网页与响应式开发</a>
+        </div>
+      </div>
+      <div class="sidebar-group" id="grp-js">
+        <div class="sidebar-group-title" onclick="toggleGroup('grp-js')">Javascript 笔记 <span class="arrow">▼</span></div>
+        <div class="sidebar-items">
+          <a href="../notes.html?cat=javascript" class="sidebar-item">JS 基础</a>
+          <a href="../notes.html?cat=javascript" class="sidebar-item">WEB APIs</a>
+          <a href="../notes.html?cat=javascript" class="sidebar-item">JS 进阶</a>
+          <a href="../notes.html?cat=javascript" class="sidebar-item">jQuery 笔记</a>
+        </div>
+      </div>
+      <div class="sidebar-group" id="grp-java">
+        <div class="sidebar-group-title" onclick="toggleGroup('grp-java')">Java 笔记 <span class="arrow">▼</span></div>
+        <div class="sidebar-items">
+          <a href="../notes.html?cat=java" class="sidebar-item">Java 基础</a>
+          <a href="../notes.html?cat=java" class="sidebar-item">面向对象编程</a>
+          <a href="../notes.html?cat=java" class="sidebar-item">Spring Boot</a>
+          <a href="../notes.html?cat=java" class="sidebar-item">MyBatis</a>
+        </div>
+      </div>
+      <div class="sidebar-group" id="grp-other">
+        <div class="sidebar-group-title" onclick="toggleGroup('grp-other')">其他 <span class="arrow">▼</span></div>
+        <div class="sidebar-items">
+          <a href="../projects.html" class="sidebar-item">项目展示</a>
+          <a href="../about.html" class="sidebar-item">关于我</a>
+        </div>
+      </div>
+    </nav>
+'''
+
+NAV_HTML = '''<header class="vp-nav">
+  <button class="mobile-menu-btn" id="menuBtn" aria-label="菜单">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+      <path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    </svg>
+  </button>
+  <a href="../index.html" class="vp-nav-logo">
+    <span class="logo-icon">📝</span>
+    <span>ShuoShuo</span>&nbsp;<span style="font-weight:400;color:var(--c-text-2)">的学习笔记</span>
+  </a>
+  <div class="vp-nav-center">
+    <div class="vp-search" tabindex="0">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" placeholder="搜索..." autocomplete="off">
+      <div class="vp-search-kbd"><kbd>Ctrl</kbd><kbd>K</kbd></div>
+    </div>
+  </div>
+  <div class="vp-nav-actions">
+    <a href="https://github.com/ShuoShuo-dev" target="_blank" title="GitHub">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    </a>
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <span id="themeIcon">🌙</span>
+      <span id="themeText">Auto</span>
+    </button>
+  </div>
+</header>'''
+
+PAGE_JS = '''<script>
+function toggleGroup(id) { document.getElementById(id).classList.toggle('collapsed'); }
+document.getElementById('menuBtn').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('active');
+});
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('active');
+}
+function toggleTheme() {
+  const icon = document.getElementById('themeIcon');
+  const text = document.getElementById('themeText');
+  if (icon.textContent === '🌙') { icon.textContent = '☀️'; text.textContent = 'Dark'; }
+  else { icon.textContent = '🌙'; text.textContent = 'Auto'; }
+}
+// 自动生成右侧目录
+function buildToc() {
+  const headings = document.querySelectorAll('.vp-doc h2, .vp-doc h3');
+  const toc = document.getElementById('toc');
+  if (!headings.length) { document.getElementById('tocAside').style.display = 'none'; return; }
+  toc.innerHTML = '<li><a href="#" class="active">Overview</a></li>';
+  headings.forEach((h, i) => {
+    if (!h.id) h.id = 'heading-' + i;
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    if (h.tagName === 'H3') a.classList.add('toc-h3');
+    li.appendChild(a);
+    toc.appendChild(li);
+  });
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      const link = toc.querySelector('a[href="#' + e.target.id + '"]');
+      if (link) link.classList.toggle('active', e.isIntersecting);
+    });
+  }, { rootMargin: '-20% 0px -75% 0px' });
+  headings.forEach(h => obs.observe(h));
+}
+buildToc();
+</script>'''
+
 
 def read_md_files():
     """读取所有 Markdown 文件"""
@@ -27,268 +150,121 @@ def read_md_files():
         return notes
     
     for filename in os.listdir(md_dir):
-        if filename.endswith('.md'):
-            filepath = os.path.join(md_dir, filename)
-            with open(filepath, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            # 解析元数据
-            title = filename[:-3]  # 去掉 .md
-            date = datetime.now().strftime('%Y-%m-%d')
-            tags = ['笔记']
-            excerpt = ''
-            
-            # 从内容中提取信息
-            lines = content.split('\n')
-            if lines and lines[0].startswith('# '):
-                title = lines[0][2:].strip()
-            
-            # 提取日期
-            date_match = re.search(r'日期[:：]\s*(\d{4}-\d{2}-\d{2})', content)
-            if date_match:
-                date = date_match.group(1)
-            
-            # 提取标签
-            tag_match = re.search(r'标签[:：]\s*(.+)', content)
-            if tag_match:
-                tags = [t.strip() for t in tag_match.group(1).split(',')]
-            
-            # 生成摘要（前100字）
-            text_content = re.sub(r'[#*`\[\]()\-_>]', '', content)
-            excerpt = text_content[:100] + '...' if len(text_content) > 100 else text_content
-            
-            notes.append({
-                'filename': filename[:-3] + '.html',
-                'title': title,
-                'date': date,
-                'tags': tags,
-                'excerpt': excerpt,
-                'content': content
-            })
+        if not filename.endswith('.md'):
+            continue
+        filepath = os.path.join(md_dir, filename)
+        with open(filepath, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        title = filename[:-3]
+        date = datetime.now().strftime('%Y-%m-%d')
+        tags = ['笔记']
+        category = 'other'
+        intro = ''
+        
+        lines = content.split('\n')
+        if lines and lines[0].startswith('# '):
+            title = lines[0][2:].strip()
+        
+        date_match = re.search(r'日期[:：]\s*(\d{4}-\d{2}-\d{2})', content)
+        if date_match:
+            date = date_match.group(1)
+        
+        tag_match = re.search(r'标签[:：]\s*(.+)', content)
+        if tag_match:
+            tags = [t.strip() for t in tag_match.group(1).split(',')]
+        
+        cat_match = re.search(r'分类[:：]\s*(.+)', content)
+        if cat_match:
+            category = cat_match.group(1).strip().lower()
+        
+        text_content = re.sub(r'[#*`\[\]()\-_>]', '', content)
+        intro = text_content[:120] + '...' if len(text_content) > 120 else text_content
+        
+        notes.append({
+            'filename': filename[:-3] + '.html',
+            'title': title,
+            'date': date,
+            'tags': ','.join(tags),
+            'category': category,
+            'intro': intro,
+            'content': content
+        })
     
-    # 按日期排序
     notes.sort(key=lambda x: x['date'], reverse=True)
     return notes
 
+
 def generate_note_html(note):
-    """生成单篇笔记的 HTML"""
+    """生成单篇笔记的 HTML（VitePress 风格）"""
     html_content = md.convert(note['content'])
     md.reset()
     
-    tags_html = ''.join([f'<span class="tag">{tag}</span>' for tag in note['tags']])
+    tags_list = [t.strip() for t in note['tags'].split(',') if t.strip()]
+    tags_html = ''.join([f'<span class="tag">{t}</span>' for t in tags_list])
     
     return f'''<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{note['title']} - ShuoShuo 的学习笔记</title>
-    <link rel="stylesheet" href="../style.css">
-    <style>
-        .note-content {{
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            max-width: 800px;
-            margin: 0 auto;
-        }}
-        .note-content h1 {{
-            color: #667eea;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }}
-        .note-content h2 {{
-            margin-top: 30px;
-            color: #333;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-        }}
-        .note-content h3 {{
-            margin-top: 20px;
-            color: #555;
-        }}
-        .note-content pre {{
-            background: #f8f8f8;
-            padding: 15px;
-            border-radius: 5px;
-            overflow-x: auto;
-            border-left: 4px solid #667eea;
-        }}
-        .note-content code {{
-            background: #f0f0f0;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-        }}
-        .note-content pre code {{
-            background: none;
-            padding: 0;
-        }}
-        .note-content blockquote {{
-            border-left: 4px solid #667eea;
-            margin: 20px 0;
-            padding: 10px 20px;
-            background: #f9f9f9;
-            color: #666;
-        }}
-        .note-content ul, .note-content ol {{
-            margin: 15px 0;
-            padding-left: 30px;
-        }}
-        .note-content li {{
-            margin: 8px 0;
-        }}
-        .note-content p {{
-            margin: 15px 0;
-            line-height: 1.8;
-        }}
-        .back-link {{
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-        }}
-        .back-link:hover {{
-            text-decoration: underline;
-        }}
-        .meta {{
-            color: #999;
-            font-size: 0.9em;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
-        }}
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{note['title']} - ShuoShuo 的学习笔记</title>
+  <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>📝 ShuoShuo 的学习笔记</h1>
-        </div>
-    </header>
 
-    <main class="container" style="padding-top: 40px;">
-        <a href="../index.html" class="back-link">← 返回首页</a>
-        
-        <article class="note-content">
-            <h1>{note['title']}</h1>
-            <div class="meta">
-                <span>📅 {note['date']}</span>
-                <span style="margin-left: 20px;">{tags_html}</span>
-            </div>
-            {html_content}
-        </article>
-    </main>
+{NAV_HTML}
 
-    <footer style="margin-top: 50px;">
-        <div class="container">
-            <p>&copy; 2026 ShuoShuo. All rights reserved.</p>
-        </div>
-    </footer>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<div class="vp-layout">
+  <aside class="vp-sidebar" id="sidebar">
+    {SIDEBAR_HTML}
+  </aside>
+
+  <div class="vp-content-wrapper">
+    <div class="vp-content">
+
+      <article class="note-detail vp-doc">
+        <a href="../notes.html" class="back-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          返回笔记列表
+        </a>
+
+        <h1>{note['title']}</h1>
+        <p style="color:var(--c-text-3);font-size:14px;margin-top:-12px;margin-bottom:32px;">
+          📅 {note['date']}
+          <span style="margin-left:16px">{tags_html}</span>
+        </p>
+
+        {html_content}
+      </article>
+
+      <aside class="vp-aside" id="tocAside">
+        <p class="aside-title">On this page</p>
+        <ul class="aside-toc" id="toc"></ul>
+      </aside>
+
+    </div>
+  </div>
+</div>
+
+{PAGE_JS}
 </body>
 </html>'''
 
-def generate_index(notes):
-    """生成首页 HTML"""
-    notes_cards = ''
-    for note in notes:
-        tags_html = ''.join([f'<span class="tag">{tag}</span>' for tag in note['tags']])
-        notes_cards += f'''
-                <article class="note-card">
-                    <h3><a href="notes/{note['filename']}">{note['title']}</a></h3>
-                    <p class="date">{note['date']}</p>
-                    <p class="excerpt">{note['excerpt']}</p>
-                    {tags_html}
-                </article>'''
-    
-    return f'''<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShuoShuo 的学习笔记</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <header>
-        <div class="container">
-            <h1>📝 ShuoShuo 的学习笔记</h1>
-            <p class="subtitle">记录学习历程，分享技术心得</p>
-        </div>
-    </header>
-
-    <nav>
-        <div class="container">
-            <ul>
-                <li><a href="#home" class="active">首页</a></li>
-                <li><a href="#notes">学习笔记</a></li>
-                <li><a href="#projects">项目展示</a></li>
-                <li><a href="#about">关于我</a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <main class="container">
-        <section id="home" class="hero">
-            <h2>欢迎来到我的学习空间</h2>
-            <p>这里记录了我的技术学习笔记、项目实践和心得体会。</p>
-        </section>
-
-        <section id="notes" class="notes-section">
-            <h2>📚 最新笔记</h2>
-            <div class="notes-grid">
-                {notes_cards}
-            </div>
-        </section>
-
-        <section id="projects" class="projects-section">
-            <h2>🚀 项目展示</h2>
-            <div class="project-list">
-                <div class="project-item">
-                    <h3>中国优秀传统文化展示互动平台</h3>
-                    <p>基于 Spring Boot + Vue 3 开发的前后端分离项目</p>
-                    <a href="https://github.com/ShuoShuo-dev/-" target="_blank">查看源码 →</a>
-                </div>
-            </div>
-        </section>
-
-        <section id="about" class="about-section">
-            <h2>👋 关于我</h2>
-            <p>我是一名热爱技术的学生，正在学习 Java 后端开发和前端技术。</p>
-            <p>这个博客用于记录我的学习历程，欢迎交流！</p>
-            <div class="contact">
-                <p>📧 邮箱：2251058969@qq.com</p>
-                <p>💻 GitHub：<a href="https://github.com/ShuoShuo-dev" target="_blank">@ShuoShuo-dev</a></p>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 ShuoShuo. All rights reserved.</p>
-            <p>Powered by GitHub Pages</p>
-        </div>
-    </footer>
-</body>
-</html>'''
 
 def build():
     """构建博客"""
     print("🚀 开始构建博客...")
     
-    # 读取 Markdown 文件
     notes = read_md_files()
     print(f"📄 找到 {len(notes)} 篇笔记")
     
-    # 确保 notes 目录存在
     if not os.path.exists('notes'):
         os.makedirs('notes')
     
-    # 生成每篇笔记的 HTML
+    # 生成每篇笔记 HTML
     for note in notes:
         html = generate_note_html(note)
         filepath = os.path.join('notes', note['filename'])
@@ -296,14 +272,15 @@ def build():
             f.write(html)
         print(f"  ✓ 生成: {note['filename']}")
     
-    # 生成首页
-    index_html = generate_index(notes)
-    with open('index.html', 'w', encoding='utf-8') as f:
-        f.write(index_html)
-    print("  ✓ 生成: index.html")
+    # 生成 notes.json（去掉 content 字段以减小体积）
+    notes_json = [{k: v for k, v in n.items() if k != 'content'} for n in notes]
+    with open(os.path.join('notes', 'notes.json'), 'w', encoding='utf-8') as f:
+        json.dump(notes_json, f, ensure_ascii=False, indent=2)
+    print("  ✓ 生成: notes/notes.json")
     
     print("\n✅ 构建完成！")
     print("💡 提示：运行 'python push.py' 推送到 GitHub")
+
 
 if __name__ == '__main__':
     build()
