@@ -1170,3 +1170,58 @@ a:hover { color: var(--c-brand-light); }
   .about-sections { padding: 24px 20px; }
   .profile-header { padding: 32px 20px 24px; }
 }
+
+/* ===========================
+   暗色主题
+   =========================== */
+[data-theme="dark"] {
+  --c-bg: #1b1b1f;
+  --c-bg-soft: #252529;
+  --c-bg-mute: #313136;
+  --c-text-1: #dde1e9;
+  --c-text-2: #9ba9bd;
+  --c-text-3: #5c6b82;
+  --c-divider: #2e2e32;
+  --c-divider-light: #28282c;
+  --c-shadow: rgba(0,0,0,0.3);
+  --c-brand: #5b85f5;
+  --c-brand-light: #7496f6;
+  --c-brand-lighter: #94b0f8;
+}
+
+[data-theme="dark"] .vp-nav {
+  background: rgba(27,27,31,0.85);
+}
+
+[data-theme="dark"] .vp-doc pre {
+  background: #0d0d0d;
+}
+
+[data-theme="dark"] .theme-toggle,
+[data-theme="dark"] .vp-search-kbd kbd {
+  background: var(--c-bg-soft);
+  border-color: var(--c-divider);
+}
+
+/* 后台管理入口按钮 */
+.admin-entry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: 1px solid var(--c-divider);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-text-2);
+  background: var(--c-bg-soft);
+  text-decoration: none;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.admin-entry-btn:hover {
+  border-color: var(--c-brand-lighter);
+  color: var(--c-brand);
+  background: var(--c-bg);
+  text-decoration: none;
+}

@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>后台管理 - ShuoShuo 的学习笔记</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ========== 后台专属变量 ========== */
+    :root {
+      --admin-sidebar-width: 220px;
+      --status-success: #22c55e;
+      --status-warning: #f59e0b;
+      --status-danger:  #ef4444;
+      --status-info:    #3b82f6;
+    }
+
+    /* ========== 整体布局 ========== */
+    body { background: var(--c-bg-soft); }
+
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+      padding-top: var(--nav-height);
+    }
+
+    /* ========== 左侧管理导航 ========== */
+    .admin-sidebar {
+      width: var(--admin-sidebar-width);
+      position: fixed;
+      top: var(--nav-height);
+      left: 0;
+      bottom: 0;
+      background: var(--c-bg);
+      border-right: 1px solid var(--c-divider);
+      overflow-y: auto;
+      z-index: 100;
+      padding: 20px 0;
+    }
+
+    .admin-nav-section {
+      margin-bottom: 8px;
+    }
+
+    .admin-nav-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--c-text-3);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 8px 20px 4px;
+    }
+
+    .admin-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 20px;
+      color: var(--c-text-2);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all .15s;
+      border-left: 3px solid transparent;
+      text-decoration: none;
+    }
+
+    .admin-nav-item:hover {
+      background: var(--c-bg-soft);
+      color: var(--c-text-1);
+    }
+
+    .admin-nav-item.active {
+      background: rgba(52, 81, 178, 0.08);
+      color: var(--c-brand);
+      border-left-color: var(--c-brand);
+      font-weight: 500;
+    }
+
+    .admin-nav-item .nav-icon {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* ========== 主内容区 ========== */
+    .admin-main {
+      margin-left: var(--admin-sidebar-width);
+      flex: 1;
+      padding: 32px;
+      min-width: 0;
+    }
+
+    /* ========== 页面标题 ========== */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--c-text-1);
+    }
+
+    .page-subtitle {
+      font-size: 14px;
+      color: var(--c-text-3);
+      margin-top: 2px;
+    }
+
+    /* ========== 按钮 ========== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all .15s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--c-brand);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--c-brand-light); color: #fff; }
+
+    .btn-secondary {
+      background: var(--c-bg-mute);
+      color: var(--c-text-1);
+      border: 1px solid var(--c-divider);
+    }
+    .btn-secondary:hover { background: var(--c-divider); }
+
+    .btn-danger {
+      background: #fef2f2;
+      color: var(--status-danger);
+      border: 1px solid #fecaca;
+    }
+    .btn-danger:hover { background: #fee2e2; }
+
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+    /* ========== 统计卡片 ========== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--c-bg);
+      border-radius: 10px;
+      border: 1px solid var(--c-divider);
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: box-shadow .2s;
+    }
+    .stat-card:hover { box-shadow: 0 4px 16px var(--c-shadow); }
+
+    .stat-icon {
+      width: 46px; height: 46px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .stat-icon.blue   { background: rgba(59,130,246,.12); }
+    .stat-icon.green  { background: rgba(34,197,94,.12);  }
+    .stat-icon.orange { background: rgba(245,158,11,.12); }
+    .stat-icon.purple { background: rgba(139,92,246,.12); }
+
+    .stat-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--c-text-1);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 13px;
+      color: var(--c-text-3);
+      margin-top: 4px;
+    }
+
+    /* ========== 卡片/面板 ========== */
+    .panel {
+      background: var(--c-bg);
+      border-radius: 10px;
+      border: 1px solid var(--c-divider);
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--c-divider);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .panel-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--c-text-1);
+    }
+
+    .panel-body { padding: 20px; }
+
+    /* ========== 搜索 & 筛选栏 ========== */
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-input {
+      flex: 1;
+      min-width: 180px;
+      padding: 7px 12px 7px 34px;
+      border: 1px solid var(--c-divider);
+      border-radius: 6px;
+      font-size: 14px;
+      background: var(--c-bg-soft);
+      color: var(--c-text-1);
+      outline: none;
+      transition: border-color .15s;
+      position: relative;
+    }
+    .filter-input:focus { border-color: var(--c-brand); background: var(--c-bg); }
+
+    .input-wrap {
+      position: relative;
+      flex: 1; min-width: 180px;
+    }
+    .input-wrap .search-ico {
+      position: absolute;
+      left: 10px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--c-text-3);
+      pointer-events: none;
+    }
+
+    .filter-select {
+      padding: 7px 12px;
+      border: 1px solid var(--c-divider);
+      border-radius: 6px;
+      font-size: 14px;
+      background: var(--c-bg-soft);
+      color: var(--c-text-1);
+      outline: none;
+      cursor: pointer;
+    }
+    .filter-select:focus { border-color: var(--c-brand); }
+
+    /* ========== 笔记表格 ========== */
+    .notes-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .notes-table th {
+      text-align: left;
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--c-text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--c-bg-soft);
+      border-bottom: 1px solid var(--c-divider);
+    }
+    .notes-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--c-divider-light);
+      color: var(--c-text-1);
+      vertical-align: middle;
+    }
+    .notes-table tr:last-child td { border-bottom: none; }
+    .notes-table tr:hover td { background: var(--c-bg-soft); }
+
+    .note-title-cell {
+      font-weight: 500;
+      color: var(--c-text-1);
+      max-width: 280px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ========== 标签 ========== */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .badge-html     { background: rgba(239,68,68,.12);  color: #dc2626; }
+    .badge-css      { background: rgba(59,130,246,.12); color: #2563eb; }
+    .badge-javascript { background: rgba(245,158,11,.12); color: #d97706; }
+    .badge-java     { background: rgba(139,92,246,.12); color: #7c3aed; }
+    .badge-other    { background: rgba(107,114,128,.1); color: #6b7280; }
+
+    .tag-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      background: rgba(52,81,178,.08);
+      color: var(--c-brand);
+      margin-right: 4px;
+    }
+
+    /* ========== 操作按钮组 ========== */
+    .action-group {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    /* ========== 空状态 ========== */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--c-text-3);
+    }
+    .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; margin-bottom: 20px; }
+
+    /* ========== 分页 ========== */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      padding: 14px 20px;
+      border-top: 1px solid var(--c-divider);
+    }
+    .page-btn {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 6px;
+      border: 1px solid var(--c-divider);
+      background: var(--c-bg);
+      color: var(--c-text-2);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .page-btn:hover { border-color: var(--c-brand); color: var(--c-brand); }
+    .page-btn.active { background: var(--c-brand); color: #fff; border-color: var(--c-brand); }
+    .page-info { font-size: 13px; color: var(--c-text-3); margin-right: 8px; }
+
+    /* ========== 模态框 ========== */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.45);
+      backdrop-filter: blur(3px);
+      z-index: 2000;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--c-bg);
+      border-radius: 12px;
+      width: 780px;
+      max-width: calc(100vw - 32px);
+      max-height: 90vh;
+      display: flex; flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,.2);
+      transform: translateY(20px);
+      transition: transform .2s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--c-divider);
+      flex-shrink: 0;
+    }
+    .modal-title { font-size: 17px; font-weight: 600; }
+
+    .modal-close {
+      width: 30px; height: 30px;
+      border-radius: 6px;
+      border: none;
+      background: var(--c-bg-mute);
+      color: var(--c-text-2);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 1;
+    }
+    .modal-close:hover { background: var(--c-divider); }
+
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--c-divider);
+      display: flex; gap: 10px; justify-content: flex-end;
+      flex-shrink: 0;
+    }
+
+    /* ========== 表单 ========== */
+    .form-group { margin-bottom: 18px; }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--c-text-2);
+      margin-bottom: 6px;
+    }
+    .form-label .required { color: var(--status-danger); margin-left: 2px; }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--c-divider);
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--c-text-1);
+      background: var(--c-bg);
+      outline: none;
+      transition: border-color .15s;
+      font-family: var(--font-family);
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--c-brand);
+      box-shadow: 0 0 0 3px rgba(52,81,178,.08);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* Markdown 编辑器区域 */
+    .editor-wrapper {
+      border: 1px solid var(--c-divider);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .editor-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 8px 10px;
+      background: var(--c-bg-soft);
+      border-bottom: 1px solid var(--c-divider);
+      flex-wrap: wrap;
+    }
+    .tb-btn {
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 4px;
+      border: none; background: none;
+      color: var(--c-text-2);
+      font-size: 13px; font-weight: 700;
+      cursor: pointer;
+      transition: all .12s;
+      font-family: monospace;
+    }
+    .tb-btn:hover { background: var(--c-divider); color: var(--c-text-1); }
+    .tb-sep { width: 1px; height: 18px; background: var(--c-divider); margin: 0 4px; }
+
+    .editor-tabs {
+      display: flex;
+      gap: 0;
+    }
+    .editor-tab {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      border: none; background: none;
+      color: var(--c-text-3);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all .15s;
+    }
+    .editor-tab.active {
+      color: var(--c-brand);
+      border-bottom-color: var(--c-brand);
+    }
+
+    .md-textarea {
+      width: 100%;
+      min-height: 300px;
+      padding: 14px;
+      border: none;
+      outline: none;
+      resize: vertical;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: var(--c-text-1);
+      background: var(--c-bg);
+    }
+
+    .md-preview {
+      min-height: 300px;
+      padding: 14px 20px;
+      background: var(--c-bg);
+      display: none;
+    }
+    .md-preview.active { display: block; }
+
+    /* ========== Toast 通知 ========== */
+    .toast-container {
+      position: fixed;
+      top: 80px; right: 24px;
+      z-index: 9999;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .toast {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px;
+      background: var(--c-bg);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.12);
+      border: 1px solid var(--c-divider);
+      font-size: 14px;
+      min-width: 240px;
+      animation: toastIn .25s ease;
+      transition: opacity .3s;
+    }
+    .toast.success { border-left: 3px solid var(--status-success); }
+    .toast.error   { border-left: 3px solid var(--status-danger);  }
+    .toast.info    { border-left: 3px solid var(--status-info);    }
+    @keyframes toastIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* ========== 确认对话框 ========== */
+    .confirm-modal {
+      width: 380px;
+    }
+    .confirm-icon {
+      font-size: 40px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .confirm-text {
+      text-align: center;
+      font-size: 15px;
+      color: var(--c-text-1);
+      margin-bottom: 6px;
+    }
+    .confirm-sub {
+      text-align: center;
+      font-size: 13px;
+      color: var(--c-text-3);
+    }
+
+    /* ========== 统计图表占位 ========== */
+    .chart-bar-group { margin-bottom: 12px; }
+    .chart-bar-label {
+      display: flex; justify-content: space-between;
+      font-size: 13px; color: var(--c-text-2);
+      margin-bottom: 4px;
+    }
+    .chart-bar-track {
+      height: 8px; border-radius: 99px;
+      background: var(--c-bg-mute);
+      overflow: hidden;
+    }
+    .chart-bar-fill {
+      height: 100%; border-radius: 99px;
+      background: var(--c-brand);
+      transition: width .6s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ========== 响应式 ========== */
+    @media (max-width: 768px) {
+      .admin-sidebar {
+        transform: translateX(-100%);
+        transition: transform .25s;
+      }
+      .admin-sidebar.open { transform: translateX(0); box-shadow: 4px 0 20px rgba(0,0,0,.12); }
+      .admin-main { margin-left: 0; padding: 16px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .notes-table th:nth-child(3),
+      .notes-table td:nth-child(3),
+      .notes-table th:nth-child(5),
+      .notes-table td:nth-child(5) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== 顶部导航栏 ===== -->
+<header class="vp-nav">
+  <button class="mobile-menu-btn" id="menuBtn" aria-label="菜单" onclick="toggleAdminSidebar()">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+      <path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    </svg>
+  </button>
+  <a href="index.html" class="vp-nav-logo">
+    <span class="logo-icon">📝</span>
+    <span>ShuoShuo</span>&nbsp;<span style="font-weight:400;color:var(--c-text-2)">后台管理</span>
+  </a>
+  <div class="vp-nav-center" style="max-width:300px">
+    <div class="vp-search" tabindex="0" id="globalSearch">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" placeholder="搜索笔记..." id="globalSearchInput" autocomplete="off">
+      <div class="vp-search-kbd"><kbd>Ctrl</kbd><kbd>K</kbd></div>
+    </div>
+  </div>
+  <div class="vp-nav-actions">
+    <a href="index.html" class="btn btn-secondary btn-sm" title="预览前台">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      前台
+    </a>
+    <a href="https://github.com/ShuoShuo-dev" target="_blank" title="GitHub">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+    </a>
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <span id="themeIcon">🌙</span>
+      <span id="themeText">Auto</span>
+    </button>
+  </div>
+</header>
+
+<!-- ===== 左侧管理导航 ===== -->
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="admin-nav-section">
+    <div class="admin-nav-label">概览</div>
+    <a class="admin-nav-item active" id="nav-dashboard" onclick="showPage('dashboard')">
+      <span class="nav-icon">📊</span> 仪表盘
+    </a>
+  </div>
+  <div class="admin-nav-section">
+    <div class="admin-nav-label">内容管理</div>
+    <a class="admin-nav-item" id="nav-notes" onclick="showPage('notes')">
+      <span class="nav-icon">📝</span> 笔记管理
+    </a>
+    <a class="admin-nav-item" id="nav-new" onclick="openNewNote()">
+      <span class="nav-icon">➕</span> 新增笔记
+    </a>
+  </div>
+  <div class="admin-nav-section">
+    <div class="admin-nav-label">部署</div>
+    <a class="admin-nav-item" id="nav-build" onclick="showPage('build')">
+      <span class="nav-icon">🚀</span> 构建 & 推送
+    </a>
+  </div>
+</aside>
+
+<!-- ===== 主内容区 ===== -->
+<div class="admin-layout">
+  <div class="admin-main" id="adminMain">
+
+    <!-- ===== 仪表盘页 ===== -->
+    <div id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">仪表盘</div>
+          <div class="page-subtitle">欢迎回来，ShuoShuo 👋</div>
+        </div>
+        <button class="btn btn-primary" onclick="openNewNote()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          新增笔记
+        </button>
+      </div>
+
+      <!-- 统计卡片 -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon blue">📄</div>
+          <div>
+            <div class="stat-value" id="stat-total">0</div>
+            <div class="stat-label">笔记总数</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">🌐</div>
+          <div>
+            <div class="stat-value" id="stat-html">0</div>
+            <div class="stat-label">HTML/CSS 笔记</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange">⚡</div>
+          <div>
+            <div class="stat-value" id="stat-js">0</div>
+            <div class="stat-label">JavaScript 笔记</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">☕</div>
+          <div>
+            <div class="stat-value" id="stat-java">0</div>
+            <div class="stat-label">Java 笔记</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 分类分布 -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">📈 分类分布</div>
+        </div>
+        <div class="panel-body" id="chartArea">
+          <div style="color:var(--c-text-3);font-size:14px;text-align:center;padding:30px 0;">暂无笔记数据</div>
+        </div>
+      </div>
+
+      <!-- 最近笔记 -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">🕐 最近更新</div>
+          <a class="btn btn-secondary btn-sm" onclick="showPage('notes')">查看全部</a>
+        </div>
+        <table class="notes-table" id="recentTable">
+          <thead>
+            <tr>
+              <th>标题</th>
+              <th>分类</th>
+              <th>日期</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="recentBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== 笔记管理页 ===== -->
+    <div id="page-notes" style="display:none">
+      <div class="page-header">
+        <div>
+          <div class="page-title">笔记管理</div>
+          <div class="page-subtitle">管理所有学习笔记</div>
+        </div>
+        <button class="btn btn-primary" onclick="openNewNote()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          新增笔记
+        </button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="filter-bar">
+            <div class="input-wrap">
+              <svg class="search-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input class="filter-input" type="text" placeholder="搜索标题..." id="noteSearch" oninput="filterNotes()">
+            </div>
+            <select class="filter-select" id="catFilter" onchange="filterNotes()">
+              <option value="">全部分类</option>
+              <option value="html">HTML5</option>
+              <option value="css">CSS3</option>
+              <option value="javascript">JavaScript</option>
+              <option value="java">Java</option>
+              <option value="other">其他</option>
+            </select>
+          </div>
+          <div style="font-size:13px;color:var(--c-text-3)" id="noteCount"></div>
+        </div>
+
+        <table class="notes-table">
+          <thead>
+            <tr>
+              <th style="width:36%">标题</th>
+              <th style="width:14%">分类</th>
+              <th style="width:16%">标签</th>
+              <th style="width:12%">日期</th>
+              <th style="width:14%">操作</th>
+            </tr>
+          </thead>
+          <tbody id="notesBody"></tbody>
+        </table>
+
+        <div id="emptyNotes" style="display:none">
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <p>暂无笔记，点击右上角新增第一篇吧</p>
+            <button class="btn btn-primary" onclick="openNewNote()">新增笔记</button>
+          </div>
+        </div>
+
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+
+    <!-- ===== 构建推送页 ===== -->
+    <div id="page-build" style="display:none">
+      <div class="page-header">
+        <div>
+          <div class="page-title">构建 &amp; 推送</div>
+          <div class="page-subtitle">一键将博客推送到 GitHub Pages</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:800px">
+        <!-- 构建说明 -->
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">📦 如何发布笔记</div></div>
+          <div class="panel-body">
+            <ol style="padding-left:18px;font-size:14px;line-height:2;color:var(--c-text-2)">
+              <li>在本页面新增 / 编辑笔记（保存至 <code>notes.json</code>）</li>
+              <li>将笔记 Markdown 文件放入 <code>md-notes/</code> 目录</li>
+              <li>在博客根目录执行 <code>python build.py</code></li>
+              <li>执行 <code>python push.py</code> 推送至 GitHub</li>
+              <li>等待 1~2 分钟，GitHub Pages 自动部署完成</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- 快速命令 -->
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">⚡ 快速命令</div></div>
+          <div class="panel-body" style="display:flex;flex-direction:column;gap:12px">
+            <div>
+              <div style="font-size:12px;color:var(--c-text-3);margin-bottom:6px">构建博客</div>
+              <div style="background:var(--c-bg-soft);border:1px solid var(--c-divider);border-radius:6px;padding:10px 14px;font-family:monospace;font-size:13px;display:flex;align-items:center;justify-content:space-between">
+                python build.py
+                <button class="btn btn-secondary btn-sm" onclick="copyCmd('python build.py')">复制</button>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:12px;color:var(--c-text-3);margin-bottom:6px">构建并推送</div>
+              <div style="background:var(--c-bg-soft);border:1px solid var(--c-divider);border-radius:6px;padding:10px 14px;font-family:monospace;font-size:13px;display:flex;align-items:center;justify-content:space-between">
+                python push.py
+                <button class="btn btn-secondary btn-sm" onclick="copyCmd('python push.py')">复制</button>
+              </div>
+            </div>
+            <a href="https://shuoshuo-dev.github.io" target="_blank" class="btn btn-primary" style="justify-content:center;margin-top:4px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              查看线上博客
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 状态说明 -->
+      <div class="panel" style="max-width:800px">
+        <div class="panel-header"><div class="panel-title">📋 目录结构说明</div></div>
+        <div class="panel-body">
+          <pre style="font-size:13px;line-height:1.8;color:var(--c-text-2);background:var(--c-bg-soft);padding:16px;border-radius:8px;overflow-x:auto">blog/
+├── md-notes/          ← 在这里放 Markdown 格式的笔记
+│   ├── JS基础.md
+│   └── Java入门.md
+├── notes/             ← build.py 自动生成 HTML 到此处
+│   └── notes.json     ← 笔记索引（notes.html 读取）
+├── admin.html         ← 本页面（后台管理）
+├── build.py           ← 构建脚本
+└── push.py            ← 一键推送脚本</pre>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== Toast 容器 ===== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ===== 新增/编辑笔记模态框 ===== -->
+<div class="modal-overlay" id="noteModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">新增笔记</div>
+      <button class="modal-close" onclick="closeModal('noteModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editIndex" value="-1">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">标题 <span class="required">*</span></label>
+          <input class="form-input" type="text" id="noteTitle" placeholder="请输入笔记标题">
+        </div>
+        <div class="form-group">
+          <label class="form-label">分类 <span class="required">*</span></label>
+          <select class="form-select" id="noteCategory">
+            <option value="html">HTML5</option>
+            <option value="css">CSS3</option>
+            <option value="javascript">JavaScript</option>
+            <option value="java">Java</option>
+            <option value="other">其他</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">日期</label>
+          <input class="form-input" type="date" id="noteDate">
+        </div>
+        <div class="form-group">
+          <label class="form-label">标签 <span style="color:var(--c-text-3);font-weight:400">（逗号分隔）</span></label>
+          <input class="form-input" type="text" id="noteTags" placeholder="例如：HTML5, 语义化, 基础">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">简介</label>
+        <input class="form-input" type="text" id="noteIntro" placeholder="一句话描述这篇笔记的内容">
+      </div>
+      <div class="form-group">
+        <label class="form-label">文件名</label>
+        <input class="form-input" type="text" id="noteFilename" placeholder="自动生成，也可手动指定（如 js-basics.html）">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Markdown 内容预览</label>
+        <div class="editor-wrapper">
+          <div class="editor-toolbar">
+            <div class="editor-tabs">
+              <button class="editor-tab active" onclick="switchTab('write')">编辑</button>
+              <button class="editor-tab" onclick="switchTab('preview')">预览</button>
+            </div>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" onclick="tbInsert('**','**')" title="加粗">B</button>
+            <button class="tb-btn" onclick="tbInsert('*','*')" title="斜体" style="font-style:italic">I</button>
+            <button class="tb-btn" onclick="tbInsert('`','`')" title="行内代码">`</button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" onclick="tbInsertLine('## ')" title="二级标题" style="font-size:11px">H2</button>
+            <button class="tb-btn" onclick="tbInsertLine('### ')" title="三级标题" style="font-size:11px">H3</button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" onclick="tbInsertLine('- ')" title="列表">≡</button>
+            <button class="tb-btn" onclick="tbInsertBlock('```\n','```')" title="代码块" style="font-size:11px">{}</button>
+            <button class="tb-btn" onclick="tbInsertLine('> ')" title="引用">"</button>
+          </div>
+          <textarea class="md-textarea" id="noteContent" placeholder="在这里输入 Markdown 内容...&#10;&#10;# 标题&#10;&#10;## 章节&#10;&#10;内容..."></textarea>
+          <div class="md-preview vp-doc" id="mdPreview"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('noteModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveNote()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        保存笔记
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 确认删除模态框 ===== -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal confirm-modal">
+    <div class="modal-header">
+      <div class="modal-title">确认删除</div>
+      <button class="modal-close" onclick="closeModal('confirmModal')">✕</button>
+    </div>
+    <div class="modal-body" style="text-align:center;padding:32px 24px">
+      <div class="confirm-icon">🗑️</div>
+      <div class="confirm-text">确定要删除这篇笔记吗？</div>
+      <div class="confirm-sub" id="confirmSubText" style="margin-top:8px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('confirmModal')">取消</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn">删除</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   数据管理 —— 使用 localStorage + notes.json 同步
+   ============================================================ */
+const STORAGE_KEY = 'admin_notes';
+
+let notes = [];
+let filteredNotes = [];
+let currentPage = 1;
+const PAGE_SIZE = 10;
+
+// 初始化：尝试从 notes.json 加载
+async function init() {
+  try {
+    const res = await fetch('notes/notes.json?t=' + Date.now());
+    if (res.ok) {
+      const data = await res.json();
+      notes = data || [];
+    }
+  } catch(e) {
+    notes = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  }
+  renderDashboard();
+  renderNotesTable();
+}
+
+// 保存到 localStorage（JSON 下载按钮备用）
+function saveLocal() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+}
+
+/* ============================================================
+   页面导航
+   ============================================================ */
+function showPage(name) {
+  ['dashboard','notes','build'].forEach(p => {
+    document.getElementById('page-' + p).style.display = p === name ? '' : 'none';
+    const nav = document.getElementById('nav-' + p);
+    if (nav) nav.classList.toggle('active', p === name);
+  });
+  // 取消 nav-new 的 active
+  document.getElementById('nav-new').classList.remove('active');
+}
+
+/* ============================================================
+   仪表盘渲染
+   ============================================================ */
+function renderDashboard() {
+  const total = notes.length;
+  const html5 = notes.filter(n => n.category === 'html' || n.category === 'css').length;
+  const js = notes.filter(n => n.category === 'javascript').length;
+  const java = notes.filter(n => n.category === 'java').length;
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-html').textContent = html5;
+  document.getElementById('stat-js').textContent = js;
+  document.getElementById('stat-java').textContent = java;
+
+  // 最近5篇
+  const recent = [...notes].slice(0, 5);
+  const tbody = document.getElementById('recentBody');
+  if (recent.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--c-text-3);padding:30px">暂无笔记</td></tr>';
+  } else {
+    tbody.innerHTML = recent.map((n, i) => `
+      <tr>
+        <td class="note-title-cell">${n.title}</td>
+        <td>${catBadge(n.category)}</td>
+        <td>${n.date || '-'}</td>
+        <td>
+          <div class="action-group">
+            <button class="btn btn-secondary btn-sm" onclick="openEditNote(${notes.indexOf(n)})">编辑</button>
+          </div>
+        </td>
+      </tr>`).join('');
+  }
+
+  // 分类图表
+  const cats = [
+    { label: 'HTML5', key: 'html', color: '#ef4444' },
+    { label: 'CSS3',  key: 'css',  color: '#3b82f6' },
+    { label: 'JavaScript', key: 'javascript', color: '#f59e0b' },
+    { label: 'Java', key: 'java', color: '#8b5cf6' },
+    { label: '其他', key: 'other', color: '#6b7280' },
+  ];
+  const chartArea = document.getElementById('chartArea');
+  if (total === 0) {
+    chartArea.innerHTML = '<div style="color:var(--c-text-3);font-size:14px;text-align:center;padding:30px 0;">暂无笔记数据</div>';
+  } else {
+    chartArea.innerHTML = cats.map(c => {
+      const count = notes.filter(n => n.category === c.key).length;
+      const pct = total ? Math.round(count / total * 100) : 0;
+      return `<div class="chart-bar-group">
+        <div class="chart-bar-label"><span>${c.label}</span><span>${count} 篇 (${pct}%)</span></div>
+        <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%;background:${c.color}"></div></div>
+      </div>`;
+    }).join('');
+  }
+}
+
+/* ============================================================
+   笔记表格渲染
+   ============================================================ */
+function catBadge(cat) {
+  const map = { html:'HTML5', css:'CSS3', javascript:'JavaScript', java:'Java', other:'其他' };
+  return `<span class="badge badge-${cat||'other'}">${map[cat] || cat}</span>`;
+}
+
+function renderNotesTable() {
+  const search = (document.getElementById('noteSearch')?.value || '').toLowerCase();
+  const cat = document.getElementById('catFilter')?.value || '';
+
+  filteredNotes = notes.filter(n => {
+    const matchSearch = !search || n.title.toLowerCase().includes(search) || (n.tags||'').toLowerCase().includes(search);
+    const matchCat = !cat || n.category === cat;
+    return matchSearch && matchCat;
+  });
+
+  document.getElementById('noteCount').textContent = `共 ${filteredNotes.length} 篇`;
+
+  const totalPages = Math.ceil(filteredNotes.length / PAGE_SIZE);
+  if (currentPage > totalPages) currentPage = 1;
+
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const paged = filteredNotes.slice(start, start + PAGE_SIZE);
+
+  const tbody = document.getElementById('notesBody');
+  const emptyDiv = document.getElementById('emptyNotes');
+
+  if (filteredNotes.length === 0) {
+    tbody.innerHTML = '';
+    emptyDiv.style.display = '';
+  } else {
+    emptyDiv.style.display = 'none';
+    tbody.innerHTML = paged.map(n => {
+      const idx = notes.indexOf(n);
+      const tagHtml = (n.tags||'').split(',').filter(Boolean).map(t => `<span class="tag-pill">${t.trim()}</span>`).join('');
+      return `<tr>
+        <td class="note-title-cell" title="${n.title}">${n.title}</td>
+        <td>${catBadge(n.category)}</td>
+        <td>${tagHtml || '-'}</td>
+        <td>${n.date || '-'}</td>
+        <td>
+          <div class="action-group">
+            <button class="btn btn-secondary btn-sm" onclick="openEditNote(${idx})">编辑</button>
+            <button class="btn btn-danger btn-sm" onclick="confirmDelete(${idx})">删除</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  renderPagination(totalPages);
+}
+
+function renderPagination(totalPages) {
+  const pg = document.getElementById('pagination');
+  if (totalPages <= 1) { pg.innerHTML = ''; return; }
+  let html = `<span class="page-info">第 ${currentPage}/${totalPages} 页</span>`;
+  html += `<button class="page-btn" onclick="gotoPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 1) {
+      html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="gotoPage(${i})">${i}</button>`;
+    } else if (Math.abs(i - currentPage) === 2) {
+      html += `<span style="color:var(--c-text-3);padding:0 2px">…</span>`;
+    }
+  }
+  html += `<button class="page-btn" onclick="gotoPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
+  pg.innerHTML = html;
+}
+
+function gotoPage(n) {
+  const total = Math.ceil(filteredNotes.length / PAGE_SIZE);
+  if (n < 1 || n > total) return;
+  currentPage = n;
+  renderNotesTable();
+}
+
+function filterNotes() { currentPage = 1; renderNotesTable(); }
+
+/* ============================================================
+   新增 / 编辑笔记
+   ============================================================ */
+function openNewNote() {
+  document.getElementById('modalTitle').textContent = '新增笔记';
+  document.getElementById('editIndex').value = '-1';
+  document.getElementById('noteTitle').value = '';
+  document.getElementById('noteCategory').value = 'html';
+  document.getElementById('noteDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('noteTags').value = '';
+  document.getElementById('noteIntro').value = '';
+  document.getElementById('noteFilename').value = '';
+  document.getElementById('noteContent').value = '';
+  document.getElementById('mdPreview').innerHTML = '';
+  switchTab('write');
+  openModal('noteModal');
+}
+
+function openEditNote(idx) {
+  const n = notes[idx];
+  if (!n) return;
+  document.getElementById('modalTitle').textContent = '编辑笔记';
+  document.getElementById('editIndex').value = idx;
+  document.getElementById('noteTitle').value = n.title || '';
+  document.getElementById('noteCategory').value = n.category || 'other';
+  document.getElementById('noteDate').value = n.date || '';
+  document.getElementById('noteTags').value = n.tags || '';
+  document.getElementById('noteIntro').value = n.intro || '';
+  document.getElementById('noteFilename').value = n.filename || '';
+  document.getElementById('noteContent').value = n.content || '';
+  switchTab('write');
+  openModal('noteModal');
+  showPage('notes');
+}
+
+function saveNote() {
+  const title = document.getElementById('noteTitle').value.trim();
+  const category = document.getElementById('noteCategory').value;
+  const date = document.getElementById('noteDate').value;
+  const tags = document.getElementById('noteTags').value.trim();
+  const intro = document.getElementById('noteIntro').value.trim();
+  const content = document.getElementById('noteContent').value;
+  let filename = document.getElementById('noteFilename').value.trim();
+
+  if (!title) { showToast('请填写笔记标题', 'error'); return; }
+
+  // 自动生成文件名
+  if (!filename) {
+    filename = title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '-') + '.html';
+  }
+
+  const note = { title, category, date, tags, intro, filename, content };
+
+  const idx = parseInt(document.getElementById('editIndex').value);
+  if (idx >= 0) {
+    notes[idx] = note;
+    showToast('笔记已更新 ✓', 'success');
+  } else {
+    notes.unshift(note);
+    showToast('笔记已保存 ✓', 'success');
+  }
+
+  saveLocal();
+  closeModal('noteModal');
+  renderDashboard();
+  renderNotesTable();
+}
+
+/* ============================================================
+   删除笔记
+   ============================================================ */
+let pendingDeleteIdx = -1;
+
+function confirmDelete(idx) {
+  pendingDeleteIdx = idx;
+  const n = notes[idx];
+  document.getElementById('confirmSubText').textContent = `"${n.title}" 将被永久删除`;
+  document.getElementById('confirmDeleteBtn').onclick = doDelete;
+  openModal('confirmModal');
+}
+
+function doDelete() {
+  if (pendingDeleteIdx < 0) return;
+  notes.splice(pendingDeleteIdx, 1);
+  pendingDeleteIdx = -1;
+  saveLocal();
+  closeModal('confirmModal');
+  renderDashboard();
+  renderNotesTable();
+  showToast('笔记已删除', 'info');
+}
+
+/* ============================================================
+   Markdown 编辑器工具栏
+   ============================================================ */
+function switchTab(tab) {
+  const ta = document.getElementById('noteContent');
+  const pv = document.getElementById('mdPreview');
+  document.querySelectorAll('.editor-tab').forEach(b => b.classList.remove('active'));
+  if (tab === 'write') {
+    ta.style.display = '';
+    pv.classList.remove('active');
+    document.querySelectorAll('.editor-tab')[0].classList.add('active');
+  } else {
+    ta.style.display = 'none';
+    pv.classList.add('active');
+    pv.innerHTML = simpleMarkdown(ta.value);
+    document.querySelectorAll('.editor-tab')[1].classList.add('active');
+  }
+}
+
+function tbInsert(before, after) {
+  const ta = document.getElementById('noteContent');
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  const sel = ta.value.slice(s, e) || '文字';
+  ta.value = ta.value.slice(0, s) + before + sel + after + ta.value.slice(e);
+  ta.focus();
+  ta.selectionStart = s + before.length;
+  ta.selectionEnd = s + before.length + sel.length;
+}
+
+function tbInsertLine(prefix) {
+  const ta = document.getElementById('noteContent');
+  const s = ta.selectionStart;
+  const lineStart = ta.value.lastIndexOf('\n', s - 1) + 1;
+  ta.value = ta.value.slice(0, lineStart) + prefix + ta.value.slice(lineStart);
+  ta.focus();
+  ta.selectionStart = ta.selectionEnd = s + prefix.length;
+}
+
+function tbInsertBlock(before, after) {
+  const ta = document.getElementById('noteContent');
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  const sel = ta.value.slice(s, e) || '代码内容';
+  ta.value = ta.value.slice(0, s) + '\n' + before + sel + '\n' + after + '\n' + ta.value.slice(e);
+  ta.focus();
+}
+
+// 简易 Markdown 渲染（预览用）
+function simpleMarkdown(md) {
+  return md
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code>$1</code>')
+    .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+    .replace(/```[\s\S]*?```/g, m => `<pre><code>${m.slice(3, -3).replace(/^\w+\n/, '')}</code></pre>`)
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/^(?!<[hupbco])(.+)$/gm, '<p>$1</p>');
+}
+
+/* ============================================================
+   Modal 工具
+   ============================================================ */
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// 点击遮罩关闭
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+
+/* ============================================================
+   Toast 通知
+   ============================================================ */
+function showToast(msg, type = 'info') {
+  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${icons[type]}</span><span>${msg}</span>`;
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 2800);
+}
+
+/* ============================================================
+   主题切换
+   ============================================================ */
+function toggleTheme() {
+  const icon = document.getElementById('themeIcon');
+  const text = document.getElementById('themeText');
+  const isDark = document.documentElement.hasAttribute('data-theme');
+  if (isDark) {
+    document.documentElement.removeAttribute('data-theme');
+    icon.textContent = '🌙'; text.textContent = 'Auto';
+  } else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    icon.textContent = '☀️'; text.textContent = 'Dark';
+  }
+}
+
+/* ============================================================
+   全局搜索 Ctrl+K
+   ============================================================ */
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    const inp = document.getElementById('globalSearchInput');
+    inp.focus();
+    inp.select();
+  }
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+  }
+});
+
+document.getElementById('globalSearchInput').addEventListener('input', function() {
+  const q = this.value.toLowerCase();
+  if (!q) return;
+  showPage('notes');
+  document.getElementById('noteSearch').value = q;
+  filterNotes();
+});
+
+/* ============================================================
+   移动端侧边栏
+   ============================================================ */
+function toggleAdminSidebar() {
+  document.getElementById('adminSidebar').classList.toggle('open');
+}
+
+/* ============================================================
+   复制命令
+   ============================================================ */
+function copyCmd(cmd) {
+  navigator.clipboard.writeText(cmd).then(() => showToast('已复制到剪贴板', 'success'));
+}
+
+/* ============================================================
+   启动
+   ============================================================ */
+// 设置今天日期
+document.getElementById('noteDate').value = new Date().toISOString().split('T')[0];
+
+init();
+</script>
+</body>
+</html>
