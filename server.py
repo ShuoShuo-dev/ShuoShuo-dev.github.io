@@ -152,7 +152,10 @@ def save_note(title: str, content_md: str, date: str, tags: str, category: str, 
 
 def delete_note(filename: str):
     """删除指定文件"""
-    filepath = os.path.join(MD_DIR, filename) if filename.endswith('.md') else os.path.join(MD_DIR, filename + '.md')
+    # 去掉 .html 后缀（前台返回的 filename 格式为 xxx.html）
+    if filename.endswith('.html'):
+        filename = filename[:-5]
+    filepath = os.path.join(MD_DIR, filename + '.md')
     if os.path.exists(filepath):
         os.remove(filepath)
         print(f'[server] 删除: {filepath}')
@@ -191,8 +194,9 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
+        from urllib.parse import unquote
         parsed = urlparse(self.path)
-        path = parsed.path
+        path = unquote(parsed.path)  # 解码 URL 中的中文
 
         # API: 笔记列表
         if path == '/api/notes':

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>后台管理 - ShuoShuo 的学习笔记</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <link rel="stylesheet" href="style.css">
   <style>
     /* ========== 后台专属变量 ========== */
@@ -38,9 +39,7 @@
       padding: 20px 0;
     }
 
-    .admin-nav-section {
-      margin-bottom: 8px;
-    }
+    .admin-nav-section { margin-bottom: 8px; }
 
     .admin-nav-label {
       font-size: 11px;
@@ -62,33 +61,23 @@
       transition: all .15s;
       border-left: 3px solid transparent;
       text-decoration: none;
+      border-radius: 0;
+      background: none;
     }
-
     .admin-nav-item:hover {
       background: var(--c-bg-soft);
       color: var(--c-text-1);
     }
-
     .admin-nav-item.active {
       background: rgba(52, 81, 178, 0.08);
       color: var(--c-brand);
       border-left-color: var(--c-brand);
       font-weight: 500;
     }
-
-    .admin-nav-item .nav-icon {
-      font-size: 16px;
-      width: 20px;
-      text-align: center;
-    }
+    .admin-nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
 
     /* ========== 主内容区 ========== */
-    .admin-main {
-      margin-left: var(--admin-sidebar-width);
-      flex: 1;
-      padding: 32px;
-      min-width: 0;
-    }
+    .admin-main { margin-left: var(--admin-sidebar-width); flex: 1; padding: 32px; min-width: 0; }
 
     /* ========== 页面标题 ========== */
     .page-header {
@@ -99,18 +88,8 @@
       flex-wrap: wrap;
       gap: 12px;
     }
-
-    .page-title {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--c-text-1);
-    }
-
-    .page-subtitle {
-      font-size: 14px;
-      color: var(--c-text-3);
-      margin-top: 2px;
-    }
+    .page-title { font-size: 22px; font-weight: 700; color: var(--c-text-1); }
+    .page-subtitle { font-size: 14px; color: var(--c-text-3); margin-top: 2px; }
 
     /* ========== 按钮 ========== */
     .btn {
@@ -126,27 +105,12 @@
       transition: all .15s;
       text-decoration: none;
     }
-
-    .btn-primary {
-      background: var(--c-brand);
-      color: #fff;
-    }
+    .btn-primary { background: var(--c-brand); color: #fff; }
     .btn-primary:hover { background: var(--c-brand-light); color: #fff; }
-
-    .btn-secondary {
-      background: var(--c-bg-mute);
-      color: var(--c-text-1);
-      border: 1px solid var(--c-divider);
-    }
+    .btn-secondary { background: var(--c-bg-mute); color: var(--c-text-1); border: 1px solid var(--c-divider); }
     .btn-secondary:hover { background: var(--c-divider); }
-
-    .btn-danger {
-      background: #fef2f2;
-      color: var(--status-danger);
-      border: 1px solid #fecaca;
-    }
+    .btn-danger { background: #fef2f2; color: var(--status-danger); border: 1px solid #fecaca; }
     .btn-danger:hover { background: #fee2e2; }
-
     .btn-sm { padding: 5px 10px; font-size: 12px; }
 
     /* ========== 统计卡片 ========== */
@@ -156,7 +120,6 @@
       gap: 16px;
       margin-bottom: 28px;
     }
-
     .stat-card {
       background: var(--c-bg);
       border-radius: 10px;
@@ -168,31 +131,18 @@
       transition: box-shadow .2s;
     }
     .stat-card:hover { box-shadow: 0 4px 16px var(--c-shadow); }
-
     .stat-icon {
       width: 46px; height: 46px;
       border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 22px;
-      flex-shrink: 0;
+      font-size: 22px; flex-shrink: 0;
     }
-
     .stat-icon.blue   { background: rgba(59,130,246,.12); }
-    .stat-icon.green  { background: rgba(34,197,94,.12);  }
+    .stat-icon.green  { background: rgba(34,197,94,.12); }
     .stat-icon.orange { background: rgba(245,158,11,.12); }
     .stat-icon.purple { background: rgba(139,92,246,.12); }
-
-    .stat-value {
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--c-text-1);
-      line-height: 1;
-    }
-    .stat-label {
-      font-size: 13px;
-      color: var(--c-text-3);
-      margin-top: 4px;
-    }
+    .stat-value { font-size: 26px; font-weight: 700; color: var(--c-text-1); line-height: 1; }
+    .stat-label { font-size: 13px; color: var(--c-text-3); margin-top: 4px; }
 
     /* ========== 卡片/面板 ========== */
     .panel {
@@ -202,7 +152,6 @@
       overflow: hidden;
       margin-bottom: 24px;
     }
-
     .panel-header {
       display: flex;
       align-items: center;
@@ -212,22 +161,11 @@
       flex-wrap: wrap;
       gap: 10px;
     }
-
-    .panel-title {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--c-text-1);
-    }
-
+    .panel-title { font-size: 15px; font-weight: 600; color: var(--c-text-1); }
     .panel-body { padding: 20px; }
 
     /* ========== 搜索 & 筛选栏 ========== */
-    .filter-bar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
+    .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; }
     .filter-input {
       flex: 1;
       min-width: 180px;
@@ -239,14 +177,9 @@
       color: var(--c-text-1);
       outline: none;
       transition: border-color .15s;
-      position: relative;
     }
     .filter-input:focus { border-color: var(--c-brand); background: var(--c-bg); }
-
-    .input-wrap {
-      position: relative;
-      flex: 1; min-width: 180px;
-    }
+    .input-wrap { position: relative; flex: 1; min-width: 180px; }
     .input-wrap .search-ico {
       position: absolute;
       left: 10px; top: 50%;
@@ -254,7 +187,6 @@
       color: var(--c-text-3);
       pointer-events: none;
     }
-
     .filter-select {
       padding: 7px 12px;
       border: 1px solid var(--c-divider);
@@ -268,11 +200,7 @@
     .filter-select:focus { border-color: var(--c-brand); }
 
     /* ========== 笔记表格 ========== */
-    .notes-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
+    .notes-table { width: 100%; border-collapse: collapse; font-size: 14px; }
     .notes-table th {
       text-align: left;
       padding: 10px 16px;
@@ -292,7 +220,6 @@
     }
     .notes-table tr:last-child td { border-bottom: none; }
     .notes-table tr:hover td { background: var(--c-bg-soft); }
-
     .note-title-cell {
       font-weight: 500;
       color: var(--c-text-1);
@@ -317,7 +244,6 @@
     .badge-javascript { background: rgba(245,158,11,.12); color: #d97706; }
     .badge-java     { background: rgba(139,92,246,.12); color: #7c3aed; }
     .badge-other    { background: rgba(107,114,128,.1); color: #6b7280; }
-
     .tag-pill {
       display: inline-block;
       padding: 2px 8px;
@@ -327,20 +253,10 @@
       color: var(--c-brand);
       margin-right: 4px;
     }
-
-    /* ========== 操作按钮组 ========== */
-    .action-group {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
+    .action-group { display: flex; gap: 6px; align-items: center; }
 
     /* ========== 空状态 ========== */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--c-text-3);
-    }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--c-text-3); }
     .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
     .empty-state p { font-size: 14px; margin-bottom: 20px; }
 
@@ -366,6 +282,7 @@
     }
     .page-btn:hover { border-color: var(--c-brand); color: var(--c-brand); }
     .page-btn.active { background: var(--c-brand); color: #fff; border-color: var(--c-brand); }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .page-info { font-size: 13px; color: var(--c-text-3); margin-right: 8px; }
 
     /* ========== 模态框 ========== */
@@ -379,7 +296,6 @@
       transition: opacity .2s;
     }
     .modal-overlay.open { opacity: 1; pointer-events: all; }
-
     .modal {
       background: var(--c-bg);
       border-radius: 12px;
@@ -392,7 +308,6 @@
       transition: transform .2s;
     }
     .modal-overlay.open .modal { transform: translateY(0); }
-
     .modal-header {
       display: flex; align-items: center; justify-content: space-between;
       padding: 18px 24px;
@@ -400,7 +315,6 @@
       flex-shrink: 0;
     }
     .modal-title { font-size: 17px; font-weight: 600; }
-
     .modal-close {
       width: 30px; height: 30px;
       border-radius: 6px;
@@ -413,13 +327,7 @@
       line-height: 1;
     }
     .modal-close:hover { background: var(--c-divider); }
-
-    .modal-body {
-      padding: 24px;
-      overflow-y: auto;
-      flex: 1;
-    }
-
+    .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
     .modal-footer {
       padding: 16px 24px;
       border-top: 1px solid var(--c-divider);
@@ -429,16 +337,8 @@
 
     /* ========== 表单 ========== */
     .form-group { margin-bottom: 18px; }
-
-    .form-label {
-      display: block;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--c-text-2);
-      margin-bottom: 6px;
-    }
+    .form-label { display: block; font-size: 13px; font-weight: 500; color: var(--c-text-2); margin-bottom: 6px; }
     .form-label .required { color: var(--status-danger); margin-left: 2px; }
-
     .form-input, .form-select, .form-textarea {
       width: 100%;
       padding: 8px 12px;
@@ -455,19 +355,10 @@
       border-color: var(--c-brand);
       box-shadow: 0 0 0 3px rgba(52,81,178,.08);
     }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    /* Markdown 编辑器区域 */
-    .editor-wrapper {
-      border: 1px solid var(--c-divider);
-      border-radius: 8px;
-      overflow: hidden;
-    }
+    /* Markdown 编辑器 */
+    .editor-wrapper { border: 1px solid var(--c-divider); border-radius: 8px; overflow: hidden; }
     .editor-toolbar {
       display: flex;
       align-items: center;
@@ -490,11 +381,7 @@
     }
     .tb-btn:hover { background: var(--c-divider); color: var(--c-text-1); }
     .tb-sep { width: 1px; height: 18px; background: var(--c-divider); margin: 0 4px; }
-
-    .editor-tabs {
-      display: flex;
-      gap: 0;
-    }
+    .editor-tabs { display: flex; }
     .editor-tab {
       padding: 6px 14px;
       font-size: 13px;
@@ -505,11 +392,7 @@
       border-bottom: 2px solid transparent;
       transition: all .15s;
     }
-    .editor-tab.active {
-      color: var(--c-brand);
-      border-bottom-color: var(--c-brand);
-    }
-
+    .editor-tab.active { color: var(--c-brand); border-bottom-color: var(--c-brand); }
     .md-textarea {
       width: 100%;
       min-height: 300px;
@@ -522,17 +405,12 @@
       line-height: 1.7;
       color: var(--c-text-1);
       background: var(--c-bg);
+      box-sizing: border-box;
     }
-
-    .md-preview {
-      min-height: 300px;
-      padding: 14px 20px;
-      background: var(--c-bg);
-      display: none;
-    }
+    .md-preview { min-height: 300px; padding: 14px 20px; background: var(--c-bg); display: none; }
     .md-preview.active { display: block; }
 
-    /* ========== Toast 通知 ========== */
+    /* ========== Toast ========== */
     .toast-container {
       position: fixed;
       top: 80px; right: 24px;
@@ -549,51 +427,27 @@
       font-size: 14px;
       min-width: 240px;
       animation: toastIn .25s ease;
-      transition: opacity .3s;
     }
     .toast.success { border-left: 3px solid var(--status-success); }
-    .toast.error   { border-left: 3px solid var(--status-danger);  }
-    .toast.info    { border-left: 3px solid var(--status-info);    }
+    .toast.error   { border-left: 3px solid var(--status-danger); }
+    .toast.info    { border-left: 3px solid var(--status-info); }
     @keyframes toastIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-    /* ========== 确认对话框 ========== */
-    .confirm-modal {
-      width: 380px;
-    }
-    .confirm-icon {
-      font-size: 40px;
-      text-align: center;
-      margin-bottom: 12px;
-    }
-    .confirm-text {
-      text-align: center;
-      font-size: 15px;
-      color: var(--c-text-1);
-      margin-bottom: 6px;
-    }
-    .confirm-sub {
-      text-align: center;
-      font-size: 13px;
-      color: var(--c-text-3);
-    }
+    /* ========== 确认框 ========== */
+    .confirm-modal { width: 380px; }
+    .confirm-icon { font-size: 40px; text-align: center; margin-bottom: 12px; }
+    .confirm-text { text-align: center; font-size: 15px; color: var(--c-text-1); margin-bottom: 6px; }
+    .confirm-sub { text-align: center; font-size: 13px; color: var(--c-text-3); }
 
-    /* ========== 统计图表占位 ========== */
+    /* ========== 分类图表 ========== */
     .chart-bar-group { margin-bottom: 12px; }
-    .chart-bar-label {
-      display: flex; justify-content: space-between;
-      font-size: 13px; color: var(--c-text-2);
-      margin-bottom: 4px;
-    }
-    .chart-bar-track {
-      height: 8px; border-radius: 99px;
-      background: var(--c-bg-mute);
-      overflow: hidden;
-    }
-    .chart-bar-fill {
-      height: 100%; border-radius: 99px;
-      background: var(--c-brand);
-      transition: width .6s cubic-bezier(.4,0,.2,1);
-    }
+    .chart-bar-label { display: flex; justify-content: space-between; font-size: 13px; color: var(--c-text-2); margin-bottom: 4px; }
+    .chart-bar-track { height: 8px; border-radius: 99px; background: var(--c-bg-mute); overflow: hidden; }
+    .chart-bar-fill { height: 100%; border-radius: 99px; transition: width .6s cubic-bezier(.4,0,.2,1); }
+
+    /* ========== Vue 过渡 ========== */
+    .fade-enter-active, .fade-leave-active { transition: opacity .2s; }
+    .fade-enter-from, .fade-leave-to { opacity: 0; }
 
     /* ========== 响应式 ========== */
     @media (max-width: 768px) {
@@ -616,7 +470,7 @@
 
 <!-- ===== 顶部导航栏 ===== -->
 <header class="vp-nav">
-  <button class="mobile-menu-btn" id="menuBtn" aria-label="菜单" onclick="toggleAdminSidebar()">
+  <button class="mobile-menu-btn" @click="sidebarOpen = !sidebarOpen" aria-label="菜单">
     <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
       <path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/>
     </svg>
@@ -626,11 +480,11 @@
     <span>ShuoShuo</span>&nbsp;<span style="font-weight:400;color:var(--c-text-2)">后台管理</span>
   </a>
   <div class="vp-nav-center" style="max-width:300px">
-    <div class="vp-search" tabindex="0" id="globalSearch">
+    <div class="vp-search" tabindex="0">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
       </svg>
-      <input type="text" placeholder="搜索笔记..." id="globalSearchInput" autocomplete="off">
+      <input type="text" placeholder="搜索笔记..." v-model="searchQuery" @input="onSearch" autocomplete="off">
       <div class="vp-search-kbd"><kbd>Ctrl</kbd><kbd>K</kbd></div>
     </div>
   </div>
@@ -642,104 +496,110 @@
     <a href="https://github.com/ShuoShuo-dev" target="_blank" title="GitHub">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
     </a>
-    <button class="theme-toggle" onclick="toggleTheme()">
-      <span id="themeIcon">🌙</span>
-      <span id="themeText">Auto</span>
+    <button class="theme-toggle" @click="toggleTheme">
+      <span>{{ themeIcon }}</span>
+      <span>{{ themeText }}</span>
     </button>
   </div>
 </header>
 
 <!-- ===== 左侧管理导航 ===== -->
-<aside class="admin-sidebar" id="adminSidebar">
+<aside class="admin-sidebar" :class="{ open: sidebarOpen }">
   <div class="admin-nav-section">
     <div class="admin-nav-label">概览</div>
-    <a class="admin-nav-item active" id="nav-dashboard" onclick="showPage('dashboard')">
+    <button class="admin-nav-item" :class="{ active: currentPage === 'dashboard' }" @click="showPage('dashboard')">
       <span class="nav-icon">📊</span> 仪表盘
-    </a>
+    </button>
   </div>
   <div class="admin-nav-section">
     <div class="admin-nav-label">内容管理</div>
-    <a class="admin-nav-item" id="nav-notes" onclick="showPage('notes')">
+    <button class="admin-nav-item" :class="{ active: currentPage === 'notes' }" @click="showPage('notes')">
       <span class="nav-icon">📝</span> 笔记管理
-    </a>
-    <a class="admin-nav-item" id="nav-new" onclick="openNewNote()">
+    </button>
+    <button class="admin-nav-item" @click="openNewNote">
       <span class="nav-icon">➕</span> 新增笔记
-    </a>
+    </button>
   </div>
   <div class="admin-nav-section">
     <div class="admin-nav-label">部署</div>
-    <a class="admin-nav-item" id="nav-build" onclick="showPage('build')">
+    <button class="admin-nav-item" :class="{ active: currentPage === 'build' }" @click="showPage('build')">
       <span class="nav-icon">🚀</span> 构建 & 推送
-    </a>
+    </button>
   </div>
 </aside>
 
 <!-- ===== 主内容区 ===== -->
 <div class="admin-layout">
-  <div class="admin-main" id="adminMain">
+  <div class="admin-main">
 
     <!-- ===== 仪表盘页 ===== -->
-    <div id="page-dashboard">
+    <div v-show="currentPage === 'dashboard'">
       <div class="page-header">
         <div>
           <div class="page-title">仪表盘</div>
           <div class="page-subtitle">欢迎回来，ShuoShuo 👋</div>
         </div>
-        <button class="btn btn-primary" onclick="openNewNote()">
+        <button class="btn btn-primary" @click="openNewNote">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           新增笔记
         </button>
       </div>
 
-      <!-- 统计卡片 -->
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon blue">📄</div>
           <div>
-            <div class="stat-value" id="stat-total">0</div>
+            <div class="stat-value">{{ notes.length }}</div>
             <div class="stat-label">笔记总数</div>
           </div>
         </div>
         <div class="stat-card">
           <div class="stat-icon green">🌐</div>
           <div>
-            <div class="stat-value" id="stat-html">0</div>
+            <div class="stat-value">{{ statHtml }}</div>
             <div class="stat-label">HTML/CSS 笔记</div>
           </div>
         </div>
         <div class="stat-card">
           <div class="stat-icon orange">⚡</div>
           <div>
-            <div class="stat-value" id="stat-js">0</div>
+            <div class="stat-value">{{ statJs }}</div>
             <div class="stat-label">JavaScript 笔记</div>
           </div>
         </div>
         <div class="stat-card">
           <div class="stat-icon purple">☕</div>
           <div>
-            <div class="stat-value" id="stat-java">0</div>
+            <div class="stat-value">{{ statJava }}</div>
             <div class="stat-label">Java 笔记</div>
           </div>
         </div>
       </div>
 
-      <!-- 分类分布 -->
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title">📈 分类分布</div>
         </div>
-        <div class="panel-body" id="chartArea">
-          <div style="color:var(--c-text-3);font-size:14px;text-align:center;padding:30px 0;">暂无笔记数据</div>
+        <div class="panel-body">
+          <div v-if="notes.length === 0" style="color:var(--c-text-3);font-size:14px;text-align:center;padding:30px 0;">暂无笔记数据</div>
+          <div v-for="cat in catStats" :key="cat.key" class="chart-bar-group">
+            <div class="chart-bar-label">
+              <span>{{ cat.label }}</span>
+              <span>{{ cat.count }} 篇 ({{ cat.pct }}%)</span>
+            </div>
+            <div class="chart-bar-track">
+              <div class="chart-bar-fill" :style="{ width: cat.pct + '%', background: cat.color }"></div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 最近笔记 -->
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title">🕐 最近更新</div>
-          <a class="btn btn-secondary btn-sm" onclick="showPage('notes')">查看全部</a>
+          <button class="btn btn-secondary btn-sm" @click="showPage('notes')">查看全部</button>
         </div>
-        <table class="notes-table" id="recentTable">
+        <table class="notes-table">
           <thead>
             <tr>
               <th>标题</th>
@@ -748,19 +608,33 @@
               <th>操作</th>
             </tr>
           </thead>
-          <tbody id="recentBody"></tbody>
+          <tbody>
+            <tr v-if="recentNotes.length === 0">
+              <td colspan="4" style="text-align:center;color:var(--c-text-3);padding:30px">暂无笔记</td>
+            </tr>
+            <tr v-for="n in recentNotes" :key="n.filename">
+              <td class="note-title-cell">{{ n.title }}</td>
+              <td><span class="badge" :class="'badge-' + (n.category || 'other')">{{ catMap[n.category] || n.category }}</span></td>
+              <td>{{ n.date || '-' }}</td>
+              <td>
+                <div class="action-group">
+                  <button class="btn btn-secondary btn-sm" @click="openEditNote(n)">编辑</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
 
     <!-- ===== 笔记管理页 ===== -->
-    <div id="page-notes" style="display:none">
+    <div v-show="currentPage === 'notes'">
       <div class="page-header">
         <div>
           <div class="page-title">笔记管理</div>
           <div class="page-subtitle">管理所有学习笔记</div>
         </div>
-        <button class="btn btn-primary" onclick="openNewNote()">
+        <button class="btn btn-primary" @click="openNewNote">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           新增笔记
         </button>
@@ -771,9 +645,9 @@
           <div class="filter-bar">
             <div class="input-wrap">
               <svg class="search-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-              <input class="filter-input" type="text" placeholder="搜索标题..." id="noteSearch" oninput="filterNotes()">
+              <input class="filter-input" type="text" placeholder="搜索标题..." v-model="searchQuery" @input="currentPageNum = 1">
             </div>
-            <select class="filter-select" id="catFilter" onchange="filterNotes()">
+            <select class="filter-select" v-model="filterCat" @change="currentPageNum = 1">
               <option value="">全部分类</option>
               <option value="html">HTML5</option>
               <option value="css">CSS3</option>
@@ -782,7 +656,7 @@
               <option value="other">其他</option>
             </select>
           </div>
-          <div style="font-size:13px;color:var(--c-text-3)" id="noteCount"></div>
+          <div style="font-size:13px;color:var(--c-text-3)">共 {{ filteredNotes.length }} 篇</div>
         </div>
 
         <table class="notes-table">
@@ -795,23 +669,51 @@
               <th style="width:14%">操作</th>
             </tr>
           </thead>
-          <tbody id="notesBody"></tbody>
+          <tbody>
+            <tr v-if="pagedNotes.length === 0">
+              <td colspan="5" style="text-align:center;padding:40px">
+                <div class="empty-state">
+                  <div class="empty-icon">📭</div>
+                  <p>暂无笔记，点击右上角新增第一篇吧</p>
+                  <button class="btn btn-primary" @click="openNewNote">新增笔记</button>
+                </div>
+              </td>
+            </tr>
+            <tr v-for="n in pagedNotes" :key="n.filename">
+              <td class="note-title-cell" :title="n.title">{{ n.title }}</td>
+              <td><span class="badge" :class="'badge-' + (n.category || 'other')">{{ catMap[n.category] || n.category }}</span></td>
+              <td>
+                <span v-for="tag in (n.tags || '').split(',').filter(Boolean)" :key="tag" class="tag-pill">{{ tag.trim() }}</span>
+                <span v-if="!n.tags">-</span>
+              </td>
+              <td>{{ n.date || '-' }}</td>
+              <td>
+                <div class="action-group">
+                  <button class="btn btn-secondary btn-sm" @click="openEditNote(n)">编辑</button>
+                  <button class="btn btn-danger btn-sm" @click="confirmDeleteNote(n)">删除</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
         </table>
 
-        <div id="emptyNotes" style="display:none">
-          <div class="empty-state">
-            <div class="empty-icon">📭</div>
-            <p>暂无笔记，点击右上角新增第一篇吧</p>
-            <button class="btn btn-primary" onclick="openNewNote()">新增笔记</button>
-          </div>
+        <div class="pagination" v-if="totalPages > 1">
+          <span class="page-info">第 {{ currentPageNum }}/{{ totalPages }} 页</span>
+          <button class="page-btn" @click="currentPageNum--" :disabled="currentPageNum === 1">‹</button>
+          <button
+            v-for="p in pageRange"
+            :key="p"
+            class="page-btn"
+            :class="{ active: p === currentPageNum }"
+            @click="currentPageNum = p"
+          >{{ p }}</button>
+          <button class="page-btn" @click="currentPageNum++" :disabled="currentPageNum === totalPages">›</button>
         </div>
-
-        <div class="pagination" id="pagination"></div>
       </div>
     </div>
 
     <!-- ===== 构建推送页 ===== -->
-    <div id="page-build" style="display:none">
+    <div v-show="currentPage === 'build'">
       <div class="page-header">
         <div>
           <div class="page-title">构建 &amp; 推送</div>
@@ -820,67 +722,27 @@
       </div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:800px">
-        <!-- 构建说明 -->
         <div class="panel">
-          <div class="panel-header"><div class="panel-title">📦 如何发布笔记（新流程）</div></div>
+          <div class="panel-header"><div class="panel-title">📦 发布流程</div></div>
           <div class="panel-body">
             <ol style="padding-left:18px;font-size:14px;line-height:2;color:var(--c-text-2)">
-              <li>先运行后端服务：<code>python server.py</code></li>
-              <li>在本页面新增 / 编辑笔记（数据自动保存到 <code>md-notes/</code>）</li>
-              <li>保存后 server.py 自动触发 <code>build.py</code> 重建站点</li>
-              <li>执行 <code>python push.py</code> 推送至 GitHub</li>
-              <li>等待 1~2 分钟，GitHub Pages 自动部署完成</li>
+              <li>运行后端服务：双击桌面「启动博客管理.bat」</li>
+              <li>在后台新增 / 编辑笔记</li>
+              <li>保存后自动触发 build.py 重建</li>
+              <li>双击桌面「上传博客.bat」推送到 GitHub</li>
+              <li>等待 1~2 分钟，博客自动上线</li>
             </ol>
           </div>
         </div>
 
-        <!-- 快速命令 -->
         <div class="panel">
-          <div class="panel-header"><div class="panel-title">⚡ 快速命令</div></div>
+          <div class="panel-header"><div class="panel-title">⚡ 快捷入口</div></div>
           <div class="panel-body" style="display:flex;flex-direction:column;gap:12px">
-            <div>
-              <div style="font-size:12px;color:var(--c-text-3);margin-bottom:6px">启动后端服务（新增/编辑笔记必需）</div>
-              <div style="background:var(--c-bg-soft);border:1px solid var(--c-divider);border-radius:6px;padding:10px 14px;font-family:monospace;font-size:13px;display:flex;align-items:center;justify-content:space-between">
-                python server.py
-                <button class="btn btn-secondary btn-sm" onclick="copyCmd('python server.py')">复制</button>
-              </div>
-            </div>
-            <div>
-              <div style="font-size:12px;color:var(--c-text-3);margin-bottom:6px">构建博客</div>
-              <div style="background:var(--c-bg-soft);border:1px solid var(--c-divider);border-radius:6px;padding:10px 14px;font-family:monospace;font-size:13px;display:flex;align-items:center;justify-content:space-between">
-                python build.py
-                <button class="btn btn-secondary btn-sm" onclick="copyCmd('python build.py')">复制</button>
-              </div>
-            </div>
-            <div>
-              <div style="font-size:12px;color:var(--c-text-3);margin-bottom:6px">构建并推送</div>
-              <div style="background:var(--c-bg-soft);border:1px solid var(--c-divider);border-radius:6px;padding:10px 14px;font-family:monospace;font-size:13px;display:flex;align-items:center;justify-content:space-between">
-                python push.py
-                <button class="btn btn-secondary btn-sm" onclick="copyCmd('python push.py')">复制</button>
-              </div>
-            </div>
-            <a href="https://shuoshuo-dev.github.io" target="_blank" class="btn btn-primary" style="justify-content:center;margin-top:4px">
+            <a href="https://shuoshuo-dev.github.io" target="_blank" class="btn btn-primary" style="justify-content:center">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
               查看线上博客
             </a>
           </div>
-        </div>
-      </div>
-
-      <!-- 状态说明 -->
-      <div class="panel" style="max-width:800px">
-        <div class="panel-header"><div class="panel-title">📋 目录结构说明</div></div>
-        <div class="panel-body">
-          <pre style="font-size:13px;line-height:1.8;color:var(--c-text-2);background:var(--c-bg-soft);padding:16px;border-radius:8px;overflow-x:auto">blog/
-├── md-notes/          ← server.py 读写 Markdown 文件到此处
-│   ├── JS基础.md
-│   └── Java入门.md
-├── notes/             ← build.py 自动生成 HTML 到此处
-│   └── notes.json     ← 笔记索引（notes.html 读取）
-├── admin.html         ← 本页面（后台管理）
-├── server.py          ← 后端 API 服务（新增/编辑/删除后自动 rebuild）
-├── build.py           ← 构建脚本
-└── push.py            ← 一键推送脚本</pre>
         </div>
       </div>
     </div>
@@ -889,25 +751,31 @@
 </div>
 
 <!-- ===== Toast 容器 ===== -->
-<div class="toast-container" id="toastContainer"></div>
+<div class="toast-container">
+  <transition-group name="fade">
+    <div v-for="t in toasts" :key="t.id" class="toast" :class="t.type">
+      <span>{{ t.icon }}</span>
+      <span>{{ t.msg }}</span>
+    </div>
+  </transition-group>
+</div>
 
 <!-- ===== 新增/编辑笔记模态框 ===== -->
-<div class="modal-overlay" id="noteModal">
+<div class="modal-overlay" :class="{ open: noteModalOpen }" @click.self="noteModalOpen = false">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title" id="modalTitle">新增笔记</div>
-      <button class="modal-close" onclick="closeModal('noteModal')">✕</button>
+      <div class="modal-title">{{ isEditing ? '编辑笔记' : '新增笔记' }}</div>
+      <button class="modal-close" @click="noteModalOpen = false">✕</button>
     </div>
     <div class="modal-body">
-      <input type="hidden" id="editIndex" value="-1">
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">标题 <span class="required">*</span></label>
-          <input class="form-input" type="text" id="noteTitle" placeholder="请输入笔记标题">
+          <input class="form-input" type="text" v-model="form.title" placeholder="请输入笔记标题">
         </div>
         <div class="form-group">
-          <label class="form-label">分类 <span class="required">*</span></label>
-          <select class="form-select" id="noteCategory">
+          <label class="form-label">分类</label>
+          <select class="form-select" v-model="form.category">
             <option value="html">HTML5</option>
             <option value="css">CSS3</option>
             <option value="javascript">JavaScript</option>
@@ -919,524 +787,412 @@
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">日期</label>
-          <input class="form-input" type="date" id="noteDate">
+          <input class="form-input" type="date" v-model="form.date">
         </div>
         <div class="form-group">
           <label class="form-label">标签 <span style="color:var(--c-text-3);font-weight:400">（逗号分隔）</span></label>
-          <input class="form-input" type="text" id="noteTags" placeholder="例如：HTML5, 语义化, 基础">
+          <input class="form-input" type="text" v-model="form.tags" placeholder="例如：HTML5, 语义化, 基础">
         </div>
       </div>
       <div class="form-group">
         <label class="form-label">简介</label>
-        <input class="form-input" type="text" id="noteIntro" placeholder="一句话描述这篇笔记的内容">
+        <input class="form-input" type="text" v-model="form.intro" placeholder="一句话描述这篇笔记的内容">
       </div>
       <div class="form-group">
-        <label class="form-label">文件名</label>
-        <input class="form-input" type="text" id="noteFilename" placeholder="自动生成，也可手动指定（如 js-basics.html）">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Markdown 内容预览</label>
+        <label class="form-label">Markdown 内容</label>
         <div class="editor-wrapper">
           <div class="editor-toolbar">
             <div class="editor-tabs">
-              <button class="editor-tab active" onclick="switchTab('write')">编辑</button>
-              <button class="editor-tab" onclick="switchTab('preview')">预览</button>
+              <button class="editor-tab" :class="{ active: editorTab === 'write' }" @click="editorTab = 'write'">编辑</button>
+              <button class="editor-tab" :class="{ active: editorTab === 'preview' }" @click="editorTab = 'preview'">预览</button>
             </div>
             <div class="tb-sep"></div>
-            <button class="tb-btn" onclick="tbInsert('**','**')" title="加粗">B</button>
-            <button class="tb-btn" onclick="tbInsert('*','*')" title="斜体" style="font-style:italic">I</button>
-            <button class="tb-btn" onclick="tbInsert('`','`')" title="行内代码">`</button>
+            <button class="tb-btn" @click="tbInsert('**','**')" title="加粗">B</button>
+            <button class="tb-btn" @click="tbInsert('*','*')" title="斜体" style="font-style:italic">I</button>
+            <button class="tb-btn" @click="tbInsert('`','`')" title="行内代码">`</button>
             <div class="tb-sep"></div>
-            <button class="tb-btn" onclick="tbInsertLine('## ')" title="二级标题" style="font-size:11px">H2</button>
-            <button class="tb-btn" onclick="tbInsertLine('### ')" title="三级标题" style="font-size:11px">H3</button>
+            <button class="tb-btn" @click="tbInsertLine('## ')" title="二级标题" style="font-size:11px">H2</button>
+            <button class="tb-btn" @click="tbInsertLine('### ')" title="三级标题" style="font-size:11px">H3</button>
             <div class="tb-sep"></div>
-            <button class="tb-btn" onclick="tbInsertLine('- ')" title="列表">≡</button>
-            <button class="tb-btn" onclick="tbInsertBlock('```\n','```')" title="代码块" style="font-size:11px">{}</button>
-            <button class="tb-btn" onclick="tbInsertLine('> ')" title="引用">"</button>
+            <button class="tb-btn" @click="tbInsertLine('- ')" title="列表">≡</button>
+            <button class="tb-btn" @click="tbInsertBlock" title="代码块" style="font-size:11px">{}</button>
+            <button class="tb-btn" @click="tbInsertLine('> ')" title="引用">"</button>
           </div>
-          <textarea class="md-textarea" id="noteContent" placeholder="在这里输入 Markdown 内容...&#10;&#10;# 标题&#10;&#10;## 章节&#10;&#10;内容..."></textarea>
-          <div class="md-preview vp-doc" id="mdPreview"></div>
+          <textarea
+            v-show="editorTab === 'write'"
+            ref="editorRef"
+            class="md-textarea"
+            v-model="form.content"
+            placeholder="在这里输入 Markdown 内容..."
+          ></textarea>
+          <div v-show="editorTab === 'preview'" class="md-preview vp-doc" v-html="renderMarkdown(form.content)"></div>
         </div>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('noteModal')">取消</button>
-      <button class="btn btn-primary" onclick="saveNote()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        保存笔记
+      <button class="btn btn-secondary" @click="noteModalOpen = false">取消</button>
+      <button class="btn btn-primary" @click="saveNote" :disabled="saving">
+        <svg v-if="!saving" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        {{ saving ? '保存中...' : '保存笔记' }}
       </button>
     </div>
   </div>
 </div>
 
 <!-- ===== 确认删除模态框 ===== -->
-<div class="modal-overlay" id="confirmModal">
+<div class="modal-overlay" :class="{ open: deleteModalOpen }" @click.self="deleteModalOpen = false">
   <div class="modal confirm-modal">
     <div class="modal-header">
       <div class="modal-title">确认删除</div>
-      <button class="modal-close" onclick="closeModal('confirmModal')">✕</button>
+      <button class="modal-close" @click="deleteModalOpen = false">✕</button>
     </div>
     <div class="modal-body" style="text-align:center;padding:32px 24px">
       <div class="confirm-icon">🗑️</div>
       <div class="confirm-text">确定要删除这篇笔记吗？</div>
-      <div class="confirm-sub" id="confirmSubText" style="margin-top:8px"></div>
+      <div class="confirm-sub" style="margin-top:8px">「{{ deleteTarget.title }}」将被永久删除</div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('confirmModal')">取消</button>
-      <button class="btn btn-danger" id="confirmDeleteBtn">删除</button>
+      <button class="btn btn-secondary" @click="deleteModalOpen = false">取消</button>
+      <button class="btn btn-danger" @click="doDelete" :disabled="deleting">删除</button>
     </div>
   </div>
 </div>
 
 <script>
-/* ============================================================
-   数据管理 —— 通过后端 API (server.py) 实现持久化
-   ============================================================ */
-const API = ''; // 同源，后端 HTTPServer 处理所有路由
+const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
 
-let notes = [];
-let filteredNotes = [];
-let currentPage = 1;
-const PAGE_SIZE = 10;
+createApp({
+  setup() {
+    // ===== 状态 =====
+    const notes = ref([]);
+    const currentPage = ref('dashboard');
+    const sidebarOpen = ref(false);
+    const searchQuery = ref('');
+    const filterCat = ref('');
+    const currentPageNum = ref(1);
+    const PAGE_SIZE = 10;
 
-// 当前正在编辑的原标题（用于判断是新增还是编辑）
-let editingOriginalTitle = '';
-let pendingDeleteFilename = '';
+    // 模态框
+    const noteModalOpen = ref(false);
+    const isEditing = ref(false);
+    const saving = ref(false);
+    const editorTab = ref('write');
+    const editorRef = ref(null);
 
-// 初始化：从后端加载笔记列表
-async function init() {
-  try {
-    const res = await fetch(API + '/api/notes');
-    if (res.ok) {
-      const data = await res.json();
-      notes = data || [];
-    }
-  } catch(e) {
-    showToast('⚠️ 无法连接后端服务，请先运行 server.py', 'error');
-  }
-  renderDashboard();
-  renderNotesTable();
-}
-
-/* ============================================================
-   页面导航
-   ============================================================ */
-function showPage(name) {
-  ['dashboard','notes','build'].forEach(p => {
-    document.getElementById('page-' + p).style.display = p === name ? '' : 'none';
-    const nav = document.getElementById('nav-' + p);
-    if (nav) nav.classList.toggle('active', p === name);
-  });
-  // 取消 nav-new 的 active
-  document.getElementById('nav-new').classList.remove('active');
-}
-
-/* ============================================================
-   仪表盘渲染
-   ============================================================ */
-function renderDashboard() {
-  const total = notes.length;
-  const html5 = notes.filter(n => n.category === 'html' || n.category === 'css').length;
-  const js = notes.filter(n => n.category === 'javascript').length;
-  const java = notes.filter(n => n.category === 'java').length;
-
-  document.getElementById('stat-total').textContent = total;
-  document.getElementById('stat-html').textContent = html5;
-  document.getElementById('stat-js').textContent = js;
-  document.getElementById('stat-java').textContent = java;
-
-  // 最近5篇
-  const recent = [...notes].slice(0, 5);
-  const tbody = document.getElementById('recentBody');
-  if (recent.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--c-text-3);padding:30px">暂无笔记</td></tr>';
-  } else {
-    tbody.innerHTML = recent.map((n, i) => `
-      <tr>
-        <td class="note-title-cell">${n.title}</td>
-        <td>${catBadge(n.category)}</td>
-        <td>${n.date || '-'}</td>
-        <td>
-          <div class="action-group">
-            <button class="btn btn-secondary btn-sm" onclick="openEditNote(${notes.indexOf(n)})">编辑</button>
-          </div>
-        </td>
-      </tr>`).join('');
-  }
-
-  // 分类图表
-  const cats = [
-    { label: 'HTML5', key: 'html', color: '#ef4444' },
-    { label: 'CSS3',  key: 'css',  color: '#3b82f6' },
-    { label: 'JavaScript', key: 'javascript', color: '#f59e0b' },
-    { label: 'Java', key: 'java', color: '#8b5cf6' },
-    { label: '其他', key: 'other', color: '#6b7280' },
-  ];
-  const chartArea = document.getElementById('chartArea');
-  if (total === 0) {
-    chartArea.innerHTML = '<div style="color:var(--c-text-3);font-size:14px;text-align:center;padding:30px 0;">暂无笔记数据</div>';
-  } else {
-    chartArea.innerHTML = cats.map(c => {
-      const count = notes.filter(n => n.category === c.key).length;
-      const pct = total ? Math.round(count / total * 100) : 0;
-      return `<div class="chart-bar-group">
-        <div class="chart-bar-label"><span>${c.label}</span><span>${count} 篇 (${pct}%)</span></div>
-        <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%;background:${c.color}"></div></div>
-      </div>`;
-    }).join('');
-  }
-}
-
-/* ============================================================
-   笔记表格渲染
-   ============================================================ */
-function catBadge(cat) {
-  const map = { html:'HTML5', css:'CSS3', javascript:'JavaScript', java:'Java', other:'其他' };
-  return `<span class="badge badge-${cat||'other'}">${map[cat] || cat}</span>`;
-}
-
-function renderNotesTable() {
-  const search = (document.getElementById('noteSearch')?.value || '').toLowerCase();
-  const cat = document.getElementById('catFilter')?.value || '';
-
-  filteredNotes = notes.filter(n => {
-    const matchSearch = !search || n.title.toLowerCase().includes(search) || (n.tags||'').toLowerCase().includes(search);
-    const matchCat = !cat || n.category === cat;
-    return matchSearch && matchCat;
-  });
-
-  document.getElementById('noteCount').textContent = `共 ${filteredNotes.length} 篇`;
-
-  const totalPages = Math.ceil(filteredNotes.length / PAGE_SIZE);
-  if (currentPage > totalPages) currentPage = 1;
-
-  const start = (currentPage - 1) * PAGE_SIZE;
-  const paged = filteredNotes.slice(start, start + PAGE_SIZE);
-
-  const tbody = document.getElementById('notesBody');
-  const emptyDiv = document.getElementById('emptyNotes');
-
-  if (filteredNotes.length === 0) {
-    tbody.innerHTML = '';
-    emptyDiv.style.display = '';
-  } else {
-    emptyDiv.style.display = 'none';
-    tbody.innerHTML = paged.map(n => {
-      const idx = notes.indexOf(n);
-      const tagHtml = (n.tags||'').split(',').filter(Boolean).map(t => `<span class="tag-pill">${t.trim()}</span>`).join('');
-      return `<tr>
-        <td class="note-title-cell" title="${n.title}">${n.title}</td>
-        <td>${catBadge(n.category)}</td>
-        <td>${tagHtml || '-'}</td>
-        <td>${n.date || '-'}</td>
-        <td>
-          <div class="action-group">
-            <button class="btn btn-secondary btn-sm" onclick="openEditNote(${idx})">编辑</button>
-            <button class="btn btn-danger btn-sm" onclick="confirmDelete(${idx})">删除</button>
-          </div>
-        </td>
-      </tr>`;
-    }).join('');
-  }
-
-  renderPagination(totalPages);
-}
-
-function renderPagination(totalPages) {
-  const pg = document.getElementById('pagination');
-  if (totalPages <= 1) { pg.innerHTML = ''; return; }
-  let html = `<span class="page-info">第 ${currentPage}/${totalPages} 页</span>`;
-  html += `<button class="page-btn" onclick="gotoPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
-  for (let i = 1; i <= totalPages; i++) {
-    if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 1) {
-      html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="gotoPage(${i})">${i}</button>`;
-    } else if (Math.abs(i - currentPage) === 2) {
-      html += `<span style="color:var(--c-text-3);padding:0 2px">…</span>`;
-    }
-  }
-  html += `<button class="page-btn" onclick="gotoPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
-  pg.innerHTML = html;
-}
-
-function gotoPage(n) {
-  const total = Math.ceil(filteredNotes.length / PAGE_SIZE);
-  if (n < 1 || n > total) return;
-  currentPage = n;
-  renderNotesTable();
-}
-
-function filterNotes() { currentPage = 1; renderNotesTable(); }
-
-/* ============================================================
-   新增 / 编辑笔记
-   ============================================================ */
-function openNewNote() {
-  editingOriginalTitle = '';
-  document.getElementById('modalTitle').textContent = '新增笔记';
-  document.getElementById('noteTitle').value = '';
-  document.getElementById('noteCategory').value = 'html';
-  document.getElementById('noteDate').value = new Date().toISOString().split('T')[0];
-  document.getElementById('noteTags').value = '';
-  document.getElementById('noteIntro').value = '';
-  document.getElementById('noteContent').value = '';
-  document.getElementById('mdPreview').innerHTML = '';
-  switchTab('write');
-  openModal('noteModal');
-}
-
-async function openEditNote(idx) {
-  const n = notes[idx];
-  if (!n) return;
-  editingOriginalTitle = n.title;
-  document.getElementById('modalTitle').textContent = '编辑笔记';
-  document.getElementById('noteTitle').value = n.title || '';
-  document.getElementById('noteCategory').value = n.category || 'other';
-  document.getElementById('noteDate').value = n.date || '';
-  document.getElementById('noteTags').value = n.tags || '';
-  document.getElementById('noteIntro').value = n.intro || '';
-  // 从服务器获取完整内容
-  try {
-    const res = await fetch(API + '/api/notes/' + encodeURIComponent(n.title));
-    if (res.ok) {
-      const full = await res.json();
-      document.getElementById('noteContent').value = full.content || '';
-    } else {
-      document.getElementById('noteContent').value = '';
-    }
-  } catch(e) {
-    document.getElementById('noteContent').value = '';
-  }
-  switchTab('write');
-  openModal('noteModal');
-  showPage('notes');
-}
-
-async function saveNote() {
-  const title = document.getElementById('noteTitle').value.trim();
-  const category = document.getElementById('noteCategory').value;
-  const date = document.getElementById('noteDate').value;
-  const tags = document.getElementById('noteTags').value.trim();
-  const intro = document.getElementById('noteIntro').value.trim();
-  const content = document.getElementById('noteContent').value;
-
-  if (!title) { showToast('请填写笔记标题', 'error'); return; }
-
-  const payload = { title, category, date, tags, intro, content };
-
-  try {
-    let res;
-    if (editingOriginalTitle) {
-      // 编辑：PUT
-      res = await fetch(API + '/api/notes/' + encodeURIComponent(editingOriginalTitle), {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-    } else {
-      // 新增：POST
-      res = await fetch(API + '/api/notes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-    }
-
-    const result = await res.json();
-    if (res.ok && result.ok) {
-      showToast(editingOriginalTitle ? '笔记已更新 ✓' : '笔记已保存 ✓', 'success');
-      // 刷新列表
-      const listRes = await fetch(API + '/api/notes');
-      if (listRes.ok) notes = await listRes.json();
-      closeModal('noteModal');
-      renderDashboard();
-      renderNotesTable();
-    } else {
-      showToast(result.error || '保存失败', 'error');
-    }
-  } catch(e) {
-    showToast('⚠️ 无法连接后端，请先运行 server.py', 'error');
-  }
-}
-
-/* ============================================================
-   删除笔记
-   ============================================================ */
-function confirmDelete(idx) {
-  const n = notes[idx];
-  pendingDeleteFilename = n.filename || (n.title + '.html');
-  document.getElementById('confirmSubText').textContent = `"${n.title}" 将被永久删除`;
-  document.getElementById('confirmDeleteBtn').onclick = doDelete;
-  openModal('confirmModal');
-}
-
-async function doDelete() {
-  try {
-    const res = await fetch(API + '/api/notes/' + encodeURIComponent(pendingDeleteFilename), {
-      method: 'DELETE'
+    const form = ref({
+      title: '',
+      category: 'html',
+      date: '',
+      tags: '',
+      intro: '',
+      content: ''
     });
-    if (res.ok) {
-      showToast('笔记已删除', 'info');
-      // 刷新列表
-      const listRes = await fetch(API + '/api/notes');
-      if (listRes.ok) notes = await listRes.json();
-      closeModal('confirmModal');
-      renderDashboard();
-      renderNotesTable();
-    } else {
-      const r = await res.json();
-      showToast(r.error || '删除失败', 'error');
+
+    // 删除
+    const deleteModalOpen = ref(false);
+    const deleteTarget = ref({});
+    const deleting = ref(false);
+
+    // Toast
+    const toasts = ref([]);
+    let toastId = 0;
+
+    // 主题
+    const themeIcon = ref('🌙');
+    const themeText = ref('Auto');
+
+    // ===== 常量 =====
+    const catMap = { html: 'HTML5', css: 'CSS3', javascript: 'JavaScript', java: 'Java', other: '其他' };
+    const catList = [
+      { label: 'HTML5', key: 'html', color: '#ef4444' },
+      { label: 'CSS3',  key: 'css',  color: '#3b82f6' },
+      { label: 'JavaScript', key: 'javascript', color: '#f59e0b' },
+      { label: 'Java', key: 'java', color: '#8b5cf6' },
+      { label: '其他', key: 'other', color: '#6b7280' },
+    ];
+
+    // ===== 计算属性 =====
+    const filteredNotes = computed(() => {
+      return notes.value.filter(n => {
+        const q = searchQuery.value.toLowerCase();
+        const matchSearch = !q || n.title.toLowerCase().includes(q) || (n.tags || '').toLowerCase().includes(q);
+        const matchCat = !filterCat.value || n.category === filterCat.value;
+        return matchSearch && matchCat;
+      });
+    });
+
+    const totalPages = computed(() => Math.ceil(filteredNotes.value.length / PAGE_SIZE) || 1);
+
+    const pagedNotes = computed(() => {
+      const start = (currentPageNum.value - 1) * PAGE_SIZE;
+      return filteredNotes.value.slice(start, start + PAGE_SIZE);
+    });
+
+    const recentNotes = computed(() => notes.value.slice(0, 5));
+
+    const statHtml = computed(() => notes.value.filter(n => n.category === 'html' || n.category === 'css').length);
+    const statJs = computed(() => notes.value.filter(n => n.category === 'javascript').length);
+    const statJava = computed(() => notes.value.filter(n => n.category === 'java').length);
+
+    const catStats = computed(() => {
+      const total = notes.value.length;
+      return catList.map(c => {
+        const count = notes.value.filter(n => n.category === c.key).length;
+        return { ...c, count, pct: total ? Math.round(count / total * 100) : 0 };
+      });
+    });
+
+    const pageRange = computed(() => {
+      const total = totalPages.value;
+      const cur = currentPageNum.value;
+      const pages = [];
+      for (let i = 1; i <= total; i++) {
+        if (i === 1 || i === total || Math.abs(i - cur) <= 1) pages.push(i);
+        else if (pages[pages.length - 1] !== '…') pages.push('…');
+      }
+      return pages.filter((p, i, arr) => p !== '…' || arr[i - 1] !== '…');
+    });
+
+    // ===== 方法 =====
+    function showToast(msg, type = 'info') {
+      const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+      const id = ++toastId;
+      toasts.value.push({ id, msg, type, icon: icons[type] || 'ℹ️' });
+      setTimeout(() => {
+        toasts.value = toasts.value.filter(t => t.id !== id);
+      }, 2800);
     }
-  } catch(e) {
-    showToast('⚠️ 无法连接后端，请先运行 server.py', 'error');
+
+    function showPage(name) {
+      currentPage.value = name;
+      sidebarOpen.value = false;
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.hasAttribute('data-theme');
+      if (isDark) {
+        document.documentElement.removeAttribute('data-theme');
+        themeIcon.value = '🌙';
+        themeText.value = 'Auto';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeIcon.value = '☀️';
+        themeText.value = 'Dark';
+      }
+    }
+
+    async function loadNotes() {
+      try {
+        const res = await fetch('/api/notes');
+        if (res.ok) {
+          notes.value = await res.json();
+        }
+      } catch (e) {
+        showToast('⚠️ 无法连接后端服务，请先运行 server.py', 'error');
+      }
+    }
+
+    function openNewNote() {
+      isEditing.value = false;
+      form.value = {
+        title: '',
+        category: 'html',
+        date: new Date().toISOString().split('T')[0],
+        tags: '',
+        intro: '',
+        content: ''
+      };
+      editorTab.value = 'write';
+      noteModalOpen.value = true;
+    }
+
+    async function openEditNote(note) {
+      isEditing.value = true;
+      form.value = {
+        title: note.title,
+        category: note.category || 'other',
+        date: note.date || '',
+        tags: note.tags || '',
+        intro: note.intro || '',
+        content: '',
+        _originalTitle: note.title,
+        _filename: note.filename
+      };
+      editorTab.value = 'write';
+
+      // 从服务器获取完整内容
+      try {
+        const res = await fetch('/api/notes/' + encodeURIComponent(note.title));
+        if (res.ok) {
+          const full = await res.json();
+          form.value.content = full.content || '';
+        }
+      } catch (e) {
+        form.value.content = '';
+      }
+
+      noteModalOpen.value = true;
+      showPage('notes');
+    }
+
+    async function saveNote() {
+      if (!form.value.title.trim()) {
+        showToast('请填写笔记标题', 'error');
+        return;
+      }
+      saving.value = true;
+      try {
+        const payload = {
+          title: form.value.title.trim(),
+          category: form.value.category,
+          date: form.value.date,
+          tags: form.value.tags.trim(),
+          intro: form.value.intro.trim(),
+          content: form.value.content
+        };
+
+        const method = isEditing.value ? 'PUT' : 'POST';
+        const url = isEditing.value ? '/api/notes/' + encodeURIComponent(form.value._originalTitle || form.value.title) : '/api/notes';
+
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await res.json();
+        if (res.ok && result.ok) {
+          showToast(isEditing.value ? '笔记已更新 ✓' : '笔记已保存 ✓', 'success');
+          noteModalOpen.value = false;
+          await loadNotes();
+        } else {
+          showToast(result.error || '保存失败', 'error');
+        }
+      } catch (e) {
+        showToast('⚠️ 无法连接后端，请先运行 server.py', 'error');
+      } finally {
+        saving.value = false;
+      }
+    }
+
+    function confirmDeleteNote(note) {
+      deleteTarget.value = note;
+      deleteModalOpen.value = true;
+    }
+
+    async function doDelete() {
+      deleting.value = true;
+      try {
+        const filename = deleteTarget.value.filename || (deleteTarget.value.title + '.html');
+        const res = await fetch('/api/notes/' + encodeURIComponent(filename), { method: 'DELETE' });
+        if (res.ok) {
+          showToast('笔记已删除', 'info');
+          deleteModalOpen.value = false;
+          await loadNotes();
+        } else {
+          const r = await res.json();
+          showToast(r.error || '删除失败', 'error');
+        }
+      } catch (e) {
+        showToast('⚠️ 无法连接后端，请先运行 server.py', 'error');
+      } finally {
+        deleting.value = false;
+      }
+    }
+
+    // ===== Markdown 编辑器工具 =====
+    function tbInsert(before, after) {
+      const ta = editorRef.value;
+      if (!ta) return;
+      const s = ta.selectionStart, e = ta.selectionEnd;
+      const sel = ta.value.slice(s, e) || '文字';
+      form.value.content = ta.value.slice(0, s) + before + sel + after + ta.value.slice(e);
+      nextTick(() => {
+        ta.focus();
+        ta.selectionStart = s + before.length;
+        ta.selectionEnd = s + before.length + sel.length;
+      });
+    }
+
+    function tbInsertLine(prefix) {
+      const ta = editorRef.value;
+      if (!ta) return;
+      const s = ta.selectionStart;
+      const lineStart = ta.value.lastIndexOf('\n', s - 1) + 1;
+      form.value.content = ta.value.slice(0, lineStart) + prefix + ta.value.slice(lineStart);
+      nextTick(() => {
+        ta.focus();
+        ta.selectionStart = ta.selectionEnd = s + prefix.length;
+      });
+    }
+
+    function tbInsertBlock() {
+      const ta = editorRef.value;
+      if (!ta) return;
+      const s = ta.selectionStart, e = ta.selectionEnd;
+      const sel = ta.value.slice(s, e) || '代码内容';
+      form.value.content = ta.value.slice(0, s) + '\n```\n' + sel + '\n```\n' + ta.value.slice(e);
+      nextTick(() => {
+        ta.focus();
+        ta.selectionStart = s + 5;
+        ta.selectionEnd = s + 5 + sel.length;
+      });
+    }
+
+    function renderMarkdown(md) {
+      if (!md) return '';
+      return md
+        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/`(.+?)`/g, '<code>$1</code>')
+        .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+        .replace(/```[\s\S]*?```/g, m => `<pre><code>${m.slice(4, -4).replace(/^\w+\n/, '')}</code></pre>`)
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/^(?!<[hupbco])(.+)$/gm, '<p>$1</p>');
+    }
+
+    function onSearch() {
+      if (searchQuery.value) showPage('notes');
+      currentPageNum.value = 1;
+    }
+
+    // ===== 键盘快捷键 =====
+    function handleKeydown(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+      }
+      if (e.key === 'Escape') {
+        noteModalOpen.value = false;
+        deleteModalOpen.value = false;
+      }
+    }
+
+    // ===== 初始化 =====
+    onMounted(() => {
+      document.addEventListener('keydown', handleKeydown);
+      loadNotes();
+    });
+
+    // 重置分页
+    watch([searchQuery, filterCat], () => { currentPageNum.value = 1; });
+
+    return {
+      notes, currentPage, sidebarOpen, searchQuery, filterCat,
+      currentPageNum, PAGE_SIZE, filteredNotes, totalPages, pagedNotes,
+      recentNotes, statHtml, statJs, statJava, catStats, catMap, pageRange,
+      noteModalOpen, isEditing, saving, editorTab, editorRef, form,
+      deleteModalOpen, deleteTarget, deleting, toasts, themeIcon, themeText,
+      showPage, toggleTheme, loadNotes, openNewNote, openEditNote, saveNote,
+      confirmDeleteNote, doDelete, tbInsert, tbInsertLine, tbInsertBlock,
+      renderMarkdown, onSearch
+    };
   }
-}
-
-/* ============================================================
-   Markdown 编辑器工具栏
-   ============================================================ */
-function switchTab(tab) {
-  const ta = document.getElementById('noteContent');
-  const pv = document.getElementById('mdPreview');
-  document.querySelectorAll('.editor-tab').forEach(b => b.classList.remove('active'));
-  if (tab === 'write') {
-    ta.style.display = '';
-    pv.classList.remove('active');
-    document.querySelectorAll('.editor-tab')[0].classList.add('active');
-  } else {
-    ta.style.display = 'none';
-    pv.classList.add('active');
-    pv.innerHTML = simpleMarkdown(ta.value);
-    document.querySelectorAll('.editor-tab')[1].classList.add('active');
-  }
-}
-
-function tbInsert(before, after) {
-  const ta = document.getElementById('noteContent');
-  const s = ta.selectionStart, e = ta.selectionEnd;
-  const sel = ta.value.slice(s, e) || '文字';
-  ta.value = ta.value.slice(0, s) + before + sel + after + ta.value.slice(e);
-  ta.focus();
-  ta.selectionStart = s + before.length;
-  ta.selectionEnd = s + before.length + sel.length;
-}
-
-function tbInsertLine(prefix) {
-  const ta = document.getElementById('noteContent');
-  const s = ta.selectionStart;
-  const lineStart = ta.value.lastIndexOf('\n', s - 1) + 1;
-  ta.value = ta.value.slice(0, lineStart) + prefix + ta.value.slice(lineStart);
-  ta.focus();
-  ta.selectionStart = ta.selectionEnd = s + prefix.length;
-}
-
-function tbInsertBlock(before, after) {
-  const ta = document.getElementById('noteContent');
-  const s = ta.selectionStart, e = ta.selectionEnd;
-  const sel = ta.value.slice(s, e) || '代码内容';
-  ta.value = ta.value.slice(0, s) + '\n' + before + sel + '\n' + after + '\n' + ta.value.slice(e);
-  ta.focus();
-}
-
-// 简易 Markdown 渲染（预览用）
-function simpleMarkdown(md) {
-  return md
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/`(.+?)`/g, '<code>$1</code>')
-    .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
-    .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
-    .replace(/```[\s\S]*?```/g, m => `<pre><code>${m.slice(3, -3).replace(/^\w+\n/, '')}</code></pre>`)
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/^(?!<[hupbco])(.+)$/gm, '<p>$1</p>');
-}
-
-/* ============================================================
-   Modal 工具
-   ============================================================ */
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-// 点击遮罩关闭
-document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
-});
-
-/* ============================================================
-   Toast 通知
-   ============================================================ */
-function showToast(msg, type = 'info') {
-  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.innerHTML = `<span>${icons[type]}</span><span>${msg}</span>`;
-  document.getElementById('toastContainer').appendChild(el);
-  setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 2800);
-}
-
-/* ============================================================
-   主题切换
-   ============================================================ */
-function toggleTheme() {
-  const icon = document.getElementById('themeIcon');
-  const text = document.getElementById('themeText');
-  const isDark = document.documentElement.hasAttribute('data-theme');
-  if (isDark) {
-    document.documentElement.removeAttribute('data-theme');
-    icon.textContent = '🌙'; text.textContent = 'Auto';
-  } else {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    icon.textContent = '☀️'; text.textContent = 'Dark';
-  }
-}
-
-/* ============================================================
-   全局搜索 Ctrl+K
-   ============================================================ */
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-    e.preventDefault();
-    const inp = document.getElementById('globalSearchInput');
-    inp.focus();
-    inp.select();
-  }
-  if (e.key === 'Escape') {
-    document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
-  }
-});
-
-document.getElementById('globalSearchInput').addEventListener('input', function() {
-  const q = this.value.toLowerCase();
-  if (!q) return;
-  showPage('notes');
-  document.getElementById('noteSearch').value = q;
-  filterNotes();
-});
-
-/* ============================================================
-   移动端侧边栏
-   ============================================================ */
-function toggleAdminSidebar() {
-  document.getElementById('adminSidebar').classList.toggle('open');
-}
-
-/* ============================================================
-   复制命令
-   ============================================================ */
-function copyCmd(cmd) {
-  navigator.clipboard.writeText(cmd).then(() => showToast('已复制到剪贴板', 'success'));
-}
-
-/* ============================================================
-   启动
-   ============================================================ */
-// 设置今天日期
-document.getElementById('noteDate').value = new Date().toISOString().split('T')[0];
-
-init();
+}).mount('body');
 </script>
 </body>
 </html>
