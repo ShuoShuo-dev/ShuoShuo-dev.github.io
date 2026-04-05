@@ -822,12 +822,12 @@
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:800px">
         <!-- 构建说明 -->
         <div class="panel">
-          <div class="panel-header"><div class="panel-title">📦 如何发布笔记</div></div>
+          <div class="panel-header"><div class="panel-title">📦 如何发布笔记（新流程）</div></div>
           <div class="panel-body">
             <ol style="padding-left:18px;font-size:14px;line-height:2;color:var(--c-text-2)">
-              <li>在本页面新增 / 编辑笔记（保存至 <code>notes.json</code>）</li>
-              <li>将笔记 Markdown 文件放入 <code>md-notes/</code> 目录</li>
-              <li>在博客根目录执行 <code>python build.py</code></li>
+              <li>先运行后端服务：<code>python server.py</code></li>
+              <li>在本页面新增 / 编辑笔记（数据自动保存到 <code>md-notes/</code>）</li>
+              <li>保存后 server.py 自动触发 <code>build.py</code> 重建站点</li>
               <li>执行 <code>python push.py</code> 推送至 GitHub</li>
               <li>等待 1~2 分钟，GitHub Pages 自动部署完成</li>
             </ol>
@@ -838,6 +838,13 @@
         <div class="panel">
           <div class="panel-header"><div class="panel-title">⚡ 快速命令</div></div>
           <div class="panel-body" style="display:flex;flex-direction:column;gap:12px">
+            <div>
+              <div style="font-size:12px;color:var(--c-text-3);margin-bottom:6px">启动后端服务（新增/编辑笔记必需）</div>
+              <div style="background:var(--c-bg-soft);border:1px solid var(--c-divider);border-radius:6px;padding:10px 14px;font-family:monospace;font-size:13px;display:flex;align-items:center;justify-content:space-between">
+                python server.py
+                <button class="btn btn-secondary btn-sm" onclick="copyCmd('python server.py')">复制</button>
+              </div>
+            </div>
             <div>
               <div style="font-size:12px;color:var(--c-text-3);margin-bottom:6px">构建博客</div>
               <div style="background:var(--c-bg-soft);border:1px solid var(--c-divider);border-radius:6px;padding:10px 14px;font-family:monospace;font-size:13px;display:flex;align-items:center;justify-content:space-between">
@@ -865,12 +872,13 @@
         <div class="panel-header"><div class="panel-title">📋 目录结构说明</div></div>
         <div class="panel-body">
           <pre style="font-size:13px;line-height:1.8;color:var(--c-text-2);background:var(--c-bg-soft);padding:16px;border-radius:8px;overflow-x:auto">blog/
-├── md-notes/          ← 在这里放 Markdown 格式的笔记
+├── md-notes/          ← server.py 读写 Markdown 文件到此处
 │   ├── JS基础.md
 │   └── Java入门.md
 ├── notes/             ← build.py 自动生成 HTML 到此处
 │   └── notes.json     ← 笔记索引（notes.html 读取）
 ├── admin.html         ← 本页面（后台管理）
+├── server.py          ← 后端 API 服务（新增/编辑/删除后自动 rebuild）
 ├── build.py           ← 构建脚本
 └── push.py            ← 一键推送脚本</pre>
         </div>
@@ -982,33 +990,32 @@
 
 <script>
 /* ============================================================
-   数据管理 —— 使用 localStorage + notes.json 同步
+   数据管理 —— 通过后端 API (server.py) 实现持久化
    ============================================================ */
-const STORAGE_KEY = 'admin_notes';
+const API = ''; // 同源，后端 HTTPServer 处理所有路由
 
 let notes = [];
 let filteredNotes = [];
 let currentPage = 1;
 const PAGE_SIZE = 10;
 
-// 初始化：尝试从 notes.json 加载
+// 当前正在编辑的原标题（用于判断是新增还是编辑）
+let editingOriginalTitle = '';
+let pendingDeleteFilename = '';
+
+// 初始化：从后端加载笔记列表
 async function init() {
   try {
-    const res = await fetch('notes/notes.json?t=' + Date.now());
+    const res = await fetch(API + '/api/notes');
     if (res.ok) {
       const data = await res.json();
       notes = data || [];
     }
   } catch(e) {
-    notes = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    showToast('⚠️ 无法连接后端服务，请先运行 server.py', 'error');
   }
   renderDashboard();
   renderNotesTable();
-}
-
-// 保存到 localStorage（JSON 下载按钮备用）
-function saveLocal() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
 }
 
 /* ============================================================
@@ -1164,92 +1171,124 @@ function filterNotes() { currentPage = 1; renderNotesTable(); }
    新增 / 编辑笔记
    ============================================================ */
 function openNewNote() {
+  editingOriginalTitle = '';
   document.getElementById('modalTitle').textContent = '新增笔记';
-  document.getElementById('editIndex').value = '-1';
   document.getElementById('noteTitle').value = '';
   document.getElementById('noteCategory').value = 'html';
   document.getElementById('noteDate').value = new Date().toISOString().split('T')[0];
   document.getElementById('noteTags').value = '';
   document.getElementById('noteIntro').value = '';
-  document.getElementById('noteFilename').value = '';
   document.getElementById('noteContent').value = '';
   document.getElementById('mdPreview').innerHTML = '';
   switchTab('write');
   openModal('noteModal');
 }
 
-function openEditNote(idx) {
+async function openEditNote(idx) {
   const n = notes[idx];
   if (!n) return;
+  editingOriginalTitle = n.title;
   document.getElementById('modalTitle').textContent = '编辑笔记';
-  document.getElementById('editIndex').value = idx;
   document.getElementById('noteTitle').value = n.title || '';
   document.getElementById('noteCategory').value = n.category || 'other';
   document.getElementById('noteDate').value = n.date || '';
   document.getElementById('noteTags').value = n.tags || '';
   document.getElementById('noteIntro').value = n.intro || '';
-  document.getElementById('noteFilename').value = n.filename || '';
-  document.getElementById('noteContent').value = n.content || '';
+  // 从服务器获取完整内容
+  try {
+    const res = await fetch(API + '/api/notes/' + encodeURIComponent(n.title));
+    if (res.ok) {
+      const full = await res.json();
+      document.getElementById('noteContent').value = full.content || '';
+    } else {
+      document.getElementById('noteContent').value = '';
+    }
+  } catch(e) {
+    document.getElementById('noteContent').value = '';
+  }
   switchTab('write');
   openModal('noteModal');
   showPage('notes');
 }
 
-function saveNote() {
+async function saveNote() {
   const title = document.getElementById('noteTitle').value.trim();
   const category = document.getElementById('noteCategory').value;
   const date = document.getElementById('noteDate').value;
   const tags = document.getElementById('noteTags').value.trim();
   const intro = document.getElementById('noteIntro').value.trim();
   const content = document.getElementById('noteContent').value;
-  let filename = document.getElementById('noteFilename').value.trim();
 
   if (!title) { showToast('请填写笔记标题', 'error'); return; }
 
-  // 自动生成文件名
-  if (!filename) {
-    filename = title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '-') + '.html';
+  const payload = { title, category, date, tags, intro, content };
+
+  try {
+    let res;
+    if (editingOriginalTitle) {
+      // 编辑：PUT
+      res = await fetch(API + '/api/notes/' + encodeURIComponent(editingOriginalTitle), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } else {
+      // 新增：POST
+      res = await fetch(API + '/api/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    }
+
+    const result = await res.json();
+    if (res.ok && result.ok) {
+      showToast(editingOriginalTitle ? '笔记已更新 ✓' : '笔记已保存 ✓', 'success');
+      // 刷新列表
+      const listRes = await fetch(API + '/api/notes');
+      if (listRes.ok) notes = await listRes.json();
+      closeModal('noteModal');
+      renderDashboard();
+      renderNotesTable();
+    } else {
+      showToast(result.error || '保存失败', 'error');
+    }
+  } catch(e) {
+    showToast('⚠️ 无法连接后端，请先运行 server.py', 'error');
   }
-
-  const note = { title, category, date, tags, intro, filename, content };
-
-  const idx = parseInt(document.getElementById('editIndex').value);
-  if (idx >= 0) {
-    notes[idx] = note;
-    showToast('笔记已更新 ✓', 'success');
-  } else {
-    notes.unshift(note);
-    showToast('笔记已保存 ✓', 'success');
-  }
-
-  saveLocal();
-  closeModal('noteModal');
-  renderDashboard();
-  renderNotesTable();
 }
 
 /* ============================================================
    删除笔记
    ============================================================ */
-let pendingDeleteIdx = -1;
-
 function confirmDelete(idx) {
-  pendingDeleteIdx = idx;
   const n = notes[idx];
+  pendingDeleteFilename = n.filename || (n.title + '.html');
   document.getElementById('confirmSubText').textContent = `"${n.title}" 将被永久删除`;
   document.getElementById('confirmDeleteBtn').onclick = doDelete;
   openModal('confirmModal');
 }
 
-function doDelete() {
-  if (pendingDeleteIdx < 0) return;
-  notes.splice(pendingDeleteIdx, 1);
-  pendingDeleteIdx = -1;
-  saveLocal();
-  closeModal('confirmModal');
-  renderDashboard();
-  renderNotesTable();
-  showToast('笔记已删除', 'info');
+async function doDelete() {
+  try {
+    const res = await fetch(API + '/api/notes/' + encodeURIComponent(pendingDeleteFilename), {
+      method: 'DELETE'
+    });
+    if (res.ok) {
+      showToast('笔记已删除', 'info');
+      // 刷新列表
+      const listRes = await fetch(API + '/api/notes');
+      if (listRes.ok) notes = await listRes.json();
+      closeModal('confirmModal');
+      renderDashboard();
+      renderNotesTable();
+    } else {
+      const r = await res.json();
+      showToast(r.error || '删除失败', 'error');
+    }
+  } catch(e) {
+    showToast('⚠️ 无法连接后端，请先运行 server.py', 'error');
+  }
 }
 
 /* ============================================================
