@@ -1,0 +1,118 @@
+/* Highlight.js - Glass Theme for Liquid Glass UI */
+pre code.hljs{display:block;overflow-x:auto;padding:1em}
+code.hljs{padding:3px 8px;border-radius:6px}
+/* Glass Dark Theme - Inspired by macOS */
+.hljs {
+  color: #e6edf3;
+  background: rgba(30, 35, 55, 0.9);
+  backdrop-filter: blur(16px);
+}
+/* Keywords */
+.hljs-doctag,
+.hljs-keyword,
+.hljs-meta .hljs-keyword,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-type,
+.hljs-variable.language_ {
+  color: #ff7b72;
+}
+/* Titles */
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.class_.inherited__,
+.hljs-title.function_ {
+  color: #d2a8ff;
+}
+/* Attributes */
+.hljs-attr,
+.hljs-attribute,
+.hljs-literal,
+.hljs-meta,
+.hljs-number,
+.hljs-operator,
+.hljs-selector-attr,
+.hljs-selector-class,
+.hljs-selector-id,
+.hljs-variable {
+  color: #79c0ff;
+}
+/* Strings */
+.hljs-meta .hljs-string,
+.hljs-regexp,
+.hljs-string {
+  color: #a5d6ff;
+}
+/* Built in */
+.hljs-built_in,
+.hljs-symbol {
+  color: #ffa657;
+}
+/* Comments */
+.hljs-code,
+.hljs-comment,
+.hljs-formula {
+  color: #8b949e;
+  font-style: italic;
+}
+/* Names */
+.hljs-name,
+.hljs-quote,
+.hljs-selector-pseudo,
+.hljs-selector-tag {
+  color: #7ee787;
+}
+/* Substitutions */
+.hljs-subst {
+  color: #e6edf3;
+}
+/* Sections */
+.hljs-section {
+  color: #1f6feb;
+  font-weight: bold;
+}
+/* Bullet */
+.hljs-bullet {
+  color: #f0883e;
+}
+/* Emphasis */
+.hljs-emphasis {
+  color: #e6edf3;
+  font-style: italic;
+}
+/* Strong */
+.hljs-strong {
+  color: #e6edf3;
+  font-weight: bold;
+}
+/* Additions */
+.hljs-addition {
+  color: #7ee787;
+  background-color: rgba(46, 160, 67, 0.15);
+}
+/* Deletions */
+.hljs-deletion {
+  color: #ff7b72;
+  background-color: rgba(255, 123, 114, 0.15);
+}
+/* Params */
+.hljs-params {
+  color: #e6edf3;
+}
+/* Links */
+.hljs-link {
+  color: #58a6ff;
+}
+/* Types */
+.hljs-class .hljs-title,
+.hljs-title.class_ {
+  color: #ffa657;
+}
+/* Function */
+.hljs-function {
+  color: #d2a8ff;
+}
+/* Variable */
+.hljs-variable {
+  color: #79c0ff;
+}

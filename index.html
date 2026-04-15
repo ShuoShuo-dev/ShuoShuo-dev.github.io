@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shuo's Study Blog</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/highlight.min.css" id="highlight-theme">
+  <!-- 防主题闪烁：渲染前立即应用已保存的主题 -->
+  <script>
+    (function(){
+      var t = localStorage.getItem('shuo_blog_theme') || 'auto';
+      if (t === 'auto') t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+      var hl = document.getElementById('highlight-theme');
+      if (hl) hl.href = t === 'dark' ? 'assets/css/highlight-dark.min.css' : 'assets/css/highlight.min.css';
+    })();
+  </script>
+  <script src="assets/js/marked.min.js"></script>
+  <script src="assets/js/highlight.min.js"></script>
+</head>
+<body>
+
+<!-- ===== 顶部导航栏 ===== -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="logo" onclick="showHome()">
+      <span class="logo-icon">📚</span>
+      <span class="logo-text">Shuo's Study Blog</span>
+    </div>
+    <nav class="topnav">
+      <a class="nav-link active" onclick="showHome()">首页</a>
+      <a class="nav-link" onclick="showAllNotes()">全部笔记</a>
+      <a class="nav-link" onclick="showAdmin()">后台管理</a>
+    </nav>
+    <div class="topbar-actions">
+      <div class="search-bar">
+        <input type="text" id="globalSearch" placeholder="搜索笔记..." oninput="handleSearch(this.value)">
+        <span class="search-icon">🔍</span>
+        <div class="search-dropdown" id="searchDropdown"></div>
+      </div>
+      <button class="theme-btn" onclick="toggleTheme()" title="切换主题">
+        <span id="themeIcon">🌙</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== 阅读进度条 ===== -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- ===== 主体布局 ===== -->
+<div class="app-container">
+
+  <!-- 侧边栏 -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">📂 分类导航</span>
+      <button class="sidebar-toggle-btn" onclick="toggleSidebar()">◀</button>
+    </div>
+    <div class="sidebar-content" id="sidebarContent">
+      <!-- 由JS动态生成 -->
+    </div>
+  </aside>
+
+  <!-- 主内容区 -->
+  <main class="main-content" id="mainContent">
+
+    <!-- ===== 首页视图 ===== -->
+    <div id="homeView">
+      <!-- Hero 区域 -->
+      <section class="hero">
+        <div class="hero-avatar">
+          <div class="avatar-ring">
+            <div class="avatar-inner">👨‍💻</div>
+          </div>
+          <div class="status-dot"></div>
+        </div>
+        <div class="hero-text">
+          <h1>你好，我是 <span class="highlight">张高硕</span> 👋</h1>
+          <p class="hero-subtitle">全栈开发者 · 终身学习者</p>
+          <div class="skill-tags">
+            <span class="skill-tag">🌐 Web 前端</span>
+            <span class="skill-tag">☕ Java 后端</span>
+            <span class="skill-tag">🧮 算法</span>
+            <span class="skill-tag">🗄️ 数据库</span>
+          </div>
+          <p class="hero-desc">专注于记录每一个学习瞬间，用笔记沉淀技术深度。</p>
+        </div>
+      </section>
+
+      <!-- 统计卡片 -->
+      <section class="stats-row">
+        <div class="stat-card">
+          <div class="stat-num" id="totalNotes">0</div>
+          <div class="stat-label">📝 总笔记数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="totalCategories">0</div>
+          <div class="stat-label">📁 分类数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="totalDays">0</div>
+          <div class="stat-label">📅 学习天数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="totalViews">0</div>
+          <div class="stat-label">👁️ 总阅读量</div>
+        </div>
+      </section>
+
+      <!-- 分类入口卡片 -->
+      <section class="section">
+        <div class="section-header">
+          <h2 class="section-title">📂 学习分类</h2>
+          <a class="section-more" onclick="showAllNotes()">查看全部 →</a>
+        </div>
+        <div class="category-grid" id="categoryGrid">
+          <!-- 由JS动态生成 -->
+        </div>
+      </section>
+
+      <!-- 最新笔记 -->
+      <section class="section">
+        <div class="section-header">
+          <h2 class="section-title">🆕 最新笔记</h2>
+          <a class="section-more" onclick="showAllNotes()">更多 →</a>
+        </div>
+        <div class="notes-list" id="latestNotesList">
+          <!-- 由JS动态生成 -->
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== 全部笔记视图 ===== -->
+    <div id="allNotesView" style="display:none">
+      <div class="view-header">
+        <h2 id="allNotesTitle">📝 全部笔记</h2>
+        <div class="sort-bar">
+          <select onchange="sortNotes(this.value)">
+            <option value="date-desc">最新优先</option>
+            <option value="date-asc">最早优先</option>
+            <option value="title">按标题排序</option>
+          </select>
+        </div>
+      </div>
+      <div class="notes-grid" id="allNotesGrid">
+        <!-- 由JS动态生成 -->
+      </div>
+    </div>
+
+    <!-- ===== 笔记详情视图 ===== -->
+    <div id="noteView" style="display:none">
+      <div class="note-layout">
+        <!-- 笔记内容 -->
+        <article class="note-article">
+          <div class="note-meta-bar">
+            <button class="back-btn" onclick="goBack()">← 返回</button>
+            <div class="note-breadcrumb" id="noteBreadcrumb"></div>
+          </div>
+          <!-- 文章信息卡片 -->
+          <div class="note-info-card">
+            <div class="note-info-title-row">
+              <h1 class="note-info-title" id="noteTitle"></h1>
+            </div>
+            <div class="note-info-meta">
+              <span class="note-info-item">
+                <span class="note-info-icon">📂</span>
+                <span id="noteCategory"></span>
+              </span>
+              <span class="note-info-sep">·</span>
+              <span class="note-info-item">
+                <span class="note-info-icon">📅</span>
+                <span id="noteDate"></span>
+              </span>
+              <span class="note-info-sep">·</span>
+              <span class="note-info-item">
+                <span class="note-info-icon">👁️</span>
+                <span id="noteViews"></span>
+              </span>
+            </div>
+            <div class="note-info-tags" id="noteTags"></div>
+          </div>
+          <div class="note-body" id="noteBody"></div>
+          <!-- 上下篇 -->
+          <div class="note-nav">
+            <button class="note-nav-btn prev" id="prevNoteBtn" onclick="navigateNote(-1)">
+              ← 上一篇
+              <span id="prevNoteTitle"></span>
+            </button>
+            <button class="note-nav-btn next" id="nextNoteBtn" onclick="navigateNote(1)">
+              下一篇 →
+              <span id="nextNoteTitle"></span>
+            </button>
+          </div>
+        </article>
+
+        <!-- 目录导航 -->
+        <div class="note-toc" id="noteToc">
+          <div class="toc-header">📋 目录</div>
+          <div class="toc-list" id="tocList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 搜索结果视图 ===== -->
+    <div id="searchView" style="display:none">
+      <div class="search-result-header">
+        <div class="search-result-title">
+          <span class="search-icon-badge">🔍</span>
+          <div class="search-result-text">
+            <h2 class="search-result-h2">搜索 "<span id="searchKeyword"></span>"</h2>
+            <p class="search-result-count">共找到 <span id="searchCount">0</span> 条相关笔记</p>
+          </div>
+        </div>
+        <button class="search-back-btn" onclick="goBack()">← 返回</button>
+      </div>
+      <div class="notes-grid" id="searchResults"></div>
+    </div>
+
+    <!-- ===== 后台管理视图 ===== -->
+    <div id="adminView" style="display:none">
+      <div class="admin-layout">
+        <div class="admin-sidebar">
+          <div class="admin-menu-item active" onclick="showAdminTab('overview')">📊 概览</div>
+          <div class="admin-menu-item" onclick="showAdminTab('notes')">📝 笔记管理</div>
+          <div class="admin-menu-item" onclick="showAdminTab('categories')">📁 分类管理</div>
+          <div class="admin-menu-item" onclick="showAdminTab('stats')">📈 阅读统计</div>
+          <div class="admin-menu-item" onclick="showAdminTab('new')">✏️ 新建笔记</div>
+        </div>
+        <div class="admin-main" id="adminMain">
+          <!-- 由JS动态生成 -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ===== 悬浮返回顶部按钮 ===== -->
+<button class="back-top" id="backTop" onclick="scrollToTop()">↑</button>
+
+<!-- ===== Toast 通知 ===== -->
+<div class="toast" id="toast"></div>
+
+<!-- 核心数据与逻辑 -->
+<script src="assets/js/app.js"></script>
+</body>
+</html>

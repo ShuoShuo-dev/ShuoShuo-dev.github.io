@@ -1,0 +1,35 @@
+# 后台管理（不上线）
+admin-server.py
+admin.html
+
+# 本地脚本和配置（不上线）
+*.bat
+*.ps1
+check_*.py
+test_*.py
+generate-index.py
+run_*.bat
+restart_admin.bat
+start.bat
+config.json
+
+# 日志和数据文件
+stats.json
+notes-index.json
+stdout.txt
+stderr.txt
+
+# Python缓存
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+
+# 回收站
+.trash/
+
+# Windows系统
+Thumbs.db
+Desktop.ini
